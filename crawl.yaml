@@ -1,0 +1,4 @@
+list: enti.csv
+outputDir: entiRes
+TTL: 86400
+
