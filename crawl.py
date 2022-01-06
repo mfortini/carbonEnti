@@ -6,8 +6,10 @@ import json
 import subprocess
 from datetime import datetime
 import logging
+from multiprocessing.pool import ThreadPool
 
 logging.basicConfig(level=logging.DEBUG)
+
 
 def usage():
     print("Usage")
@@ -30,10 +32,67 @@ def carbonResults(url):
         logging.info(url)
         res = subprocess.run(["node", "carbon.js", url], capture_output=True, text=True)
 
-        return json.loads(res.stdout)
+        ret = json.loads(res.stdout)
+        ret["url"] = url
+        return ret
     except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError):
-        logging.error("Error", url)
-        return {"lighthouse": "Error"}
+        try:
+            url.replace("http://", "").replace("https://", "")
+            url = "http://" + url
+            logging.info(url)
+            res = subprocess.run(
+                ["node", "carbon.js", url], capture_output=True, text=True
+            )
+
+            ret = json.loads(res.stdout)
+            ret["url"] = url
+            return ret
+        except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError):
+            logging.error("Error", url)
+            return {"lighthouse": "Error", "score": 0, "url": url}
+
+
+def crawlComune(comune,outputDir):
+    logging.info("crawlComune {}".format(comune["Denominazione_ente"]))
+    tsNow = datetime.now().timestamp()
+    codiceIPA = comune["Codice_IPA"]
+    rerun = True
+    with open(os.path.join(outputDir, codiceIPA + ".json"), "a+") as f:
+        try:
+            f.seek(0)
+            existData = json.load(f)
+            ts = existData["ts"]
+            logging.info("tsNow {} ts {} diff {}".format(tsNow, ts, tsNow - ts))
+            if tsNow - ts < cfg["TTL"]:
+                rerun = False
+        except json.JSONDecodeError:
+            logging.warning("Cannot decode JSON")
+            pass
+        f.seek(0)
+
+        if rerun:
+            carbonRes = carbonResults(comune["Sito_istituzionale"])
+
+            try:
+                res = {
+                    "Codice_IPA": codiceIPA,
+                    "ts": tsNow,
+                    "url": carbonRes["url"],
+                    "lighthouseScore": carbonRes["score"],
+                    "first-meaningful-paint": carbonRes["rawResult"]["audits"][
+                        "first-meaningful-paint"
+                    ],
+                    "total-byte-weight": carbonRes["rawResult"]["audits"][
+                        "total-byte-weight"
+                    ],
+                    "resource-summary": carbonRes["rawResult"]["audits"][
+                        "resource-summary"
+                    ],
+                }
+                print(res)
+                json.dump(res, f)
+            except KeyError:
+                print("Error carbonRes", carbonRes)
 
 
 def main():
@@ -55,28 +114,13 @@ def main():
     except OSError:
         pass
 
+    tp = ThreadPool(None)
     for idx, comune in comuniList.iterrows():
-        tsNow = datetime.now().timestamp()
-        codiceIPA = comune["Codice_IPA"]
-        rerun = True
-        with open(os.path.join(outputDir, codiceIPA + ".json"), "a+") as f:
-            try:
-                f.seek(0)
-                existData = json.load(f)
-                ts = existData["ts"]
-                logging.info("tsNow {} ts {}".format(tsNow, ts))
-                if tsNow - ts < cfg["TTL"]:
-                    rerun = False
-            except json.JSONDecodeError:
-                logging.warning("Cannot decode JSON")
-                pass
-            f.seek(0)
+        tp.apply_async(crawlComune, (comune,outputDir))
+        # crawlComune(comune)
 
-            if rerun:
-                carbonRes = carbonResults(comune["Sito_istituzionale"])
-
-                res = {"Codice_IPA": codiceIPA, "ts": tsNow, "lighthouse": carbonRes}
-                json.dump(res, f)
+    tp.close()
+    tp.join()
 
 
 if __name__ == "__main__":
