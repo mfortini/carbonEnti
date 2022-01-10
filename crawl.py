@@ -27,7 +27,7 @@ def parseArguments():
 
 def carbonResults(url):
     try:
-        url.replace("http://", "").replace("https://", "")
+        url=url.replace(r"http://", "").replace(r"https://", "")
         url = "https://" + url
         logging.info(url)
         res = subprocess.run(["node", "carbon.js", url], capture_output=True, text=True)
@@ -37,7 +37,7 @@ def carbonResults(url):
         return ret
     except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError):
         try:
-            url.replace("http://", "").replace("https://", "")
+            url=url.replace(r"http://", "").replace(r"https://", "")
             url = "http://" + url
             logging.info(url)
             res = subprocess.run(
