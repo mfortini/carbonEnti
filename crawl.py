@@ -27,7 +27,7 @@ def parseArguments():
 
 def carbonResults(url):
     try:
-        url=url.replace(r"http://", "").replace(r"https://", "")
+        url = url.replace(r"http://", "").replace(r"https://", "")
         url = "https://" + url
         logging.info(url)
         res = subprocess.run(["node", "carbon.js", url], capture_output=True, text=True)
@@ -37,7 +37,7 @@ def carbonResults(url):
         return ret
     except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError):
         try:
-            url=url.replace(r"http://", "").replace(r"https://", "")
+            url = url.replace(r"http://", "").replace(r"https://", "")
             url = "http://" + url
             logging.info(url)
             res = subprocess.run(
@@ -48,11 +48,11 @@ def carbonResults(url):
             ret["url"] = url
             return ret
         except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError):
-            logging.error("Error", url)
+            logging.error("Error {}".format(url))
             return {"lighthouse": "Error", "score": 0, "url": url}
 
 
-def crawlComune(comune,outputDir):
+def crawlComune(comune, outputDir, cfg):
     logging.info("crawlComune {}".format(comune["Denominazione_ente"]))
     tsNow = datetime.now().timestamp()
     codiceIPA = comune["Codice_IPA"]
@@ -62,13 +62,16 @@ def crawlComune(comune,outputDir):
             f.seek(0)
             existData = json.load(f)
             ts = existData["ts"]
-            logging.info("tsNow {} ts {} diff {}".format(tsNow, ts, tsNow - ts))
-            if tsNow - ts < cfg["TTL"]:
+            logging.info(
+                "tsNow {} ts {} diff {} TTL {}".format(
+                    tsNow, ts, tsNow - ts, cfg["TTL"]
+                )
+            )
+            if (tsNow - ts) < cfg["TTL"]:
                 rerun = False
         except json.JSONDecodeError:
             logging.warning("Cannot decode JSON")
             pass
-        f.seek(0)
 
         if rerun:
             carbonRes = carbonResults(comune["Sito_istituzionale"])
@@ -90,6 +93,8 @@ def crawlComune(comune,outputDir):
                     ],
                 }
                 print(res)
+                f.seek(0)
+                f.truncate(0)
                 json.dump(res, f)
             except KeyError:
                 print("Error carbonRes", carbonRes)
@@ -116,7 +121,7 @@ def main():
 
     tp = ThreadPool(None)
     for idx, comune in comuniList.iterrows():
-        tp.apply_async(crawlComune, (comune,outputDir))
+        tp.apply_async(crawlComune, (comune, outputDir,cfg))
         # crawlComune(comune)
 
     tp.close()
