@@ -5,6 +5,7 @@ import os
 import json
 import subprocess
 from datetime import datetime
+import re
 import logging
 from multiprocessing.pool import ThreadPool
 
@@ -52,6 +53,53 @@ def carbonResults(url):
             return {"lighthouse": "Error", "score": 0, "url": url}
 
 
+def checkBootstrap(url):
+    try:
+        url = url.replace(r"http://", "").replace(r"https://", "")
+        url = "https://" + url
+        logging.info(url)
+        res = subprocess.run(
+            ["node", "checkBootstrap.js", url], capture_output=True, text=True
+        )
+
+        ret = json.loads(res.stdout)
+        ret["url"] = url
+    except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError) as e:
+        logging.debug("stdout {}".format(res.stdout))
+        logging.debug(e)
+        try:
+            url = url.replace(r"http://", "").replace(r"https://", "")
+            url = "http://" + url
+            logging.info(url)
+            res = subprocess.run(
+                ["node", "checkBootstrap.js", url], capture_output=True, text=True
+            )
+            ret = json.loads(res.stdout)
+            ret["url"] = url
+        except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError) as e:
+            logging.debug(e)
+            logging.debug("stdout {}".format(res.stdout))
+            logging.error("Error {}".format(url))
+            return {"bootstrap": "Error", "url": url}
+
+    bootstrapGen = False
+    bootstrapItalia = False
+    for (k, e) in ret.items():
+        if re.match(r".*(js|css)$", k, re.IGNORECASE):
+            logging.debug("key {} matches".format(k))
+            if re.match(
+                r".*bootstrap.{0,16}italia.*", "{}".format(k), re.IGNORECASE
+            ) or re.match(r".*bootstrap.{0,16}italia.*", "{}".format(e), re.IGNORECASE):
+                bootstrapItalia = True
+            elif re.match(r".*bootstrap.*", "{}".format(k), re.IGNORECASE) or re.match(
+                r".*bootstrap.*", "{}".format(e), re.IGNORECASE
+            ):
+                bootstrapGen = True
+
+    ret = {"bootstrap": bootstrapGen, "bootstrapItalia": bootstrapItalia}
+    return ret
+
+
 def crawlComune(comune, outputDir, cfg):
     logging.info("crawlComune {}".format(comune["Denominazione_ente"]))
     tsNow = datetime.now().timestamp()
@@ -76,6 +124,8 @@ def crawlComune(comune, outputDir, cfg):
         if rerun:
             carbonRes = carbonResults(comune["Sito_istituzionale"])
 
+            res = None
+
             try:
                 res = {
                     "Codice_IPA": codiceIPA,
@@ -92,12 +142,18 @@ def crawlComune(comune, outputDir, cfg):
                         "resource-summary"
                     ],
                 }
+            except KeyError:
+                print("Error carbonRes", carbonRes)
+
+            bootstrapRes = checkBootstrap(comune["Sito_istituzionale"])
+
+            res["bootstrapItalia"] = bootstrapRes
+
+            if res is not None:
                 print(res)
                 f.seek(0)
                 f.truncate(0)
                 json.dump(res, f)
-            except KeyError:
-                print("Error carbonRes", carbonRes)
 
 
 def main():
@@ -119,10 +175,10 @@ def main():
     except OSError:
         pass
 
-    tp = ThreadPool(None)
+    tp = ThreadPool()
     for idx, comune in comuniList.iterrows():
-        tp.apply_async(crawlComune, (comune, outputDir,cfg))
-        # crawlComune(comune)
+        tp.apply_async(crawlComune, (comune, outputDir, cfg))
+        # crawlComune(comune, outputDir, cfg)
 
     tp.close()
     tp.join()
