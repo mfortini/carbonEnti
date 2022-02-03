@@ -1,5 +1,11 @@
 {
   "devDependencies": {
     "lighthouse": "^9.2.0"
+  },
+  "dependencies": {
+    "pupeteer": "^0.0.1",
+    "puppeteer": "^13.1.1",
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.9"
   }
 }
