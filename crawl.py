@@ -91,7 +91,8 @@ def checkBootstrap(url):
                 r".*bootstrap.{0,16}italia.*", "{}".format(k), re.IGNORECASE
             ) or re.match(r".*bootstrap.{0,16}italia.*", "{}".format(e), re.IGNORECASE):
                 bootstrapItalia = True
-            elif re.match(r".*bootstrap.*", "{}".format(k), re.IGNORECASE) or re.match(
+
+            if re.match(r".*bootstrap.*", "{}".format(k), re.IGNORECASE) or re.match(
                 r".*bootstrap.*", "{}".format(e), re.IGNORECASE
             ):
                 bootstrapGen = True
