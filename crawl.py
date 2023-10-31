@@ -125,6 +125,10 @@ def crawlComune(comune, outputDir, cfg):
         if rerun:
             carbonRes = carbonResults(comune["Sito_istituzionale"])
 
+            del carbonRes["rawResult"]["audits"]["screenshot-thumbnails"]
+            del carbonRes["rawResult"]["audits"]["final-screenshot"]
+            del carbonRes["rawResult"]["audits"]["full-page-screenshot"]
+
             res = None
 
             try:
@@ -142,6 +146,8 @@ def crawlComune(comune, outputDir, cfg):
                     "resource-summary": carbonRes["rawResult"]["audits"][
                         "resource-summary"
                     ],
+                    "accessibility": carbonRes["rawResult"]["categories"]["accessibility"]["score"],
+                    "lighthouseRawResult": carbonRes["rawResult"],
                 }
             except KeyError:
                 print("Error carbonRes", carbonRes)
@@ -179,7 +185,7 @@ def main():
     tp = ThreadPool()
     for idx, comune in comuniList.iterrows():
         tp.apply_async(crawlComune, (comune, outputDir, cfg))
-        # crawlComune(comune, outputDir, cfg)
+        #crawlComune(comune, outputDir, cfg)
 
     tp.close()
     tp.join()
