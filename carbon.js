@@ -4,7 +4,7 @@ const chromeLauncher = require('chrome-launcher');
 const url = process.argv[2];
 
 (async () => {
-  const chrome = await chromeLauncher.launch({chromeFlags: ['--headless','--nosandbox']});
+  const chrome = await chromeLauncher.launch({chromeFlags: ['--headless','--no-sandbox']});
   //const options = {logLevel: 'info', output: 'html', onlyCategories: ['performance'], port: chrome.port};
   const options = {logLevel: 'info', output: 'html', port: chrome.port};
   const runnerResult = await lighthouse(url, options);
