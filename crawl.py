@@ -175,6 +175,9 @@ def main():
 
     comuniList = crawlList[crawlList["Codice_natura"] == 2430]
 
+    # Randomize list
+    comuniList = comuniList.sample(frac=1).reset_index(drop=True)
+
     outputDir = cfg["outputDir"]
 
     try:
