@@ -1,4 +1,4 @@
 list: enti.csv
 outputDir: entiRes
-TTL: 86400
+TTL: 864000
 
