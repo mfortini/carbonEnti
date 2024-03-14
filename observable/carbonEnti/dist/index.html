@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Analisi Lighthouse dei siti dei comuni italiani | CarbonEnti</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-cotton.css">
+<link rel="preload" as="style" href="./_observablehq/stdlib/inputs.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-cotton.css">
+<link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.css">
+<link rel="modulepreload" href="./_observablehq/client.js">
+<link rel="modulepreload" href="./_observablehq/runtime.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.js">
+<link rel="modulepreload" href="./_npm/d3@7.9.0/+esm.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/duckdb.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/inputs.js">
+<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.14/+esm.js">
+<link rel="modulepreload" href="./_npm/@duckdb/duckdb-wasm@1.28.0/+esm.js">
+<link rel="modulepreload" href="./_npm/htl@0.3.1/+esm.js">
+<link rel="modulepreload" href="./_npm/isoformat@0.2.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-array@3.2.4/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-axis@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-brush@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-chord@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-color@3.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-contour@4.0.2/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-drag@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-ease@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-force@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-format@3.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-geo@3.1.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-hierarchy@3.1.2/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-interpolate@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-path@3.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-polygon@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-quadtree@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-random@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-scale@4.0.2/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-scale-chromatic@3.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-selection@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-shape@3.2.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-time@3.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-timer@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-transition@3.0.1/+esm.js">
+<link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/interval-tree-1d@1.0.4/+esm.js">
+<link rel="modulepreload" href="./_npm/apache-arrow@13.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/internmap@2.0.3/+esm.js">
+<link rel="modulepreload" href="./_npm/delaunator@5.0.0/+esm.js">
+<link rel="modulepreload" href="./_npm/binary-search-bounds@2.0.5/+esm.js">
+<link rel="modulepreload" href="./_npm/tslib@2.6.2/+esm.js">
+<link rel="modulepreload" href="./_npm/flatbuffers@23.5.26/+esm.js">
+<link rel="modulepreload" href="./_npm/robust-predicates@3.0.2/+esm.js">
+<script type="module">
+
+import {define} from "./_observablehq/client.js";
+import {registerFile, FileAttachment} from "./_observablehq/stdlib.js";
+import {registerTable} from "./_observablehq/stdlib/duckdb.js";
+
+registerFile("./data/entiRes.parquet", {"name":"./data/entiRes.parquet","path":"./_file/data/entiRes.37bb1e45.parquet"});
+registerTable("entiRes", FileAttachment("./data/entiRes.parquet"));
+
+define({id: "9fdad5ce", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
+display(Inputs.table(await sql`SELECT CAST (crawlDate AS STRING) as crawlDate, COUNT(Codice_IPA) FROM entiRes where lighthouseScore = 0 GROUP BY crawlDate ORDER BY crawlDate`));
+}});
+
+define({id: "70152a65", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
+display(Inputs.table(await sql`PIVOT entiRes  ON starts_with(url, 'https://') USING COUNT(Codice_IPA) GROUP BY crawlDate`));
+}});
+
+define({id: "d11c16ec", inputs: ["sql"], outputs: ["https"], body: async (sql) => {
+const https = await sql`SELECT CAST (crawlDate AS STRING) as crawlDate, COUNT(Codice_IPA) numHTTPS FROM entiRes WHERE  starts_with(url, 'https://') GROUP BY crawlDate ORDER BY crawlDate`;
+return {https};
+}});
+
+define({id: "c9343fb1", inputs: ["Plot","https","display"], body: async (Plot,https,display) => {
+display(await(
+Plot.plot (
+    {
+        x:{type:"band"},
+          color: {legend: true, type:"ordinal",scheme: "Observable10"},
+marks: [
+    Plot.barY(https,{x: "crawlDate", y: "numHTTPS",fill:"crawlDate"}),
+    Plot.ruleY([0])
+    ]
+}
+)
+))
+}});
+
+define({id: "ee53ab98", inputs: ["sql"], outputs: ["lightHouseScore"], body: async (sql) => {
+const lightHouseScore = await sql`SELECT  CAST (crawlDate AS STRING) as crawlDate, Codice_IPA, denominazione_ente, url, lightHouseScore, firstMeaningfulPaint, totalByteWeight, bootstrap, bootstrapItalia from entiRes WHERE lightHouseScore > 0`;
+return {lightHouseScore};
+}});
+
+define({id: "c316ddd2", inputs: ["Plot","lightHouseScore","display"], body: async (Plot,lightHouseScore,display) => {
+display(await(
+Plot.plot({
+ title: `Distribuzione dei punteggi Lighthouse`,
+   color: {legend: true,type:"ordinal",scheme: "Observable10"},
+  y: {
+    grid: true,
+    inset: 10
+  },
+  x: {
+        type: "band",
+  },
+  marks: [
+    Plot.boxY(lightHouseScore, {x: "crawlDate", y: "lighthouseScore",fill:"crawlDate"})
+  ]
+})
+))
+}});
+
+define({id: "31b6b911", inputs: ["view","Inputs","lightHouseScore"], outputs: ["filterDateScore"], body: (view,Inputs,lightHouseScore) => {
+const filterDateScore = view(Inputs.select(lightHouseScore.toArray().map(x=>x["crawlDate"]), {sort: "descending", reverse:true, unique: true, label:"Data di crawl"}));
+return {filterDateScore};
+}});
+
+define({id: "797030c2", inputs: ["Plot","filterDateScore","lightHouseScore","display"], body: async (Plot,filterDateScore,lightHouseScore,display) => {
+display(await(
+Plot.plot({
+  title: `Distribuzione dei punteggi Lighthouse (data crawl ${filterDateScore})`,
+  y: {grid: true},
+  marks: [
+    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.crawlDate == filterDateScore)), Plot.binX({y: "count"}, {x: "lighthouseScore",fill:"crawlDate"})),
+    Plot.ruleY([0])
+  ]
+})
+))
+}});
+
+define({id: "425cb3b2", inputs: ["Plot","lightHouseScore","display"], body: async (Plot,lightHouseScore,display) => {
+display(await(
+Plot.plot({
+ title: `Distribuzione dei tempi`,
+  y: {
+    grid: true
+  },
+  x: { type: "band"},
+      color: {legend: false,type:"categorical",scheme: "Observable10"},
+
+  marks: [
+    Plot.boxY(lightHouseScore, {x: "crawlDate", y: "firstMeaningfulPaint", fill:"crawlDate"})
+  ]
+})
+))
+}});
+
+define({id: "4eba0582", inputs: ["Plot","lightHouseScore","display"], body: async (Plot,lightHouseScore,display) => {
+display(await(
+Plot.plot({
+ title: `Distribuzione dei tempi (meno di 9000ms)`,
+  y: {
+    grid: true
+  },
+  x: { type: "band"},
+        color: {legend: false,type:"categorical",scheme: "Observable10"},
+
+  marks: [
+    Plot.boxY(lightHouseScore.toArray().filter((x)=>x.firstMeaningfulPaint < 9000), {x: "crawlDate", y: "firstMeaningfulPaint",fill:"crawlDate"})
+  ]
+})
+))
+}});
+
+define({id: "13a35e83", inputs: ["view","Inputs","lightHouseScore"], outputs: ["filterDateTTFMP"], body: (view,Inputs,lightHouseScore) => {
+const filterDateTTFMP = view(Inputs.select(lightHouseScore.toArray().map(x=>x["crawlDate"]), {sort: "descending", reverse:true, unique: true, label:"Data di crawl"}));
+return {filterDateTTFMP};
+}});
+
+define({id: "770f6358", inputs: ["Plot","filterDateTTFMP","lightHouseScore","display"], body: async (Plot,filterDateTTFMP,lightHouseScore,display) => {
+display(await(
+Plot.plot({
+  title: `Distribuzione dei tempi (meno di 9000ms - data crawl ${filterDateTTFMP})`,
+  y: {grid: true},
+  color: {legend: true,type:"categorical",scheme: "Observable10"},
+  marks: [
+    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.firstMeaningfulPaint < 9000) && (x.crawlDate == filterDateTTFMP)), Plot.binX({y: "count"}, {x: "firstMeaningfulPaint",fill:"crawlDate"})),
+    Plot.ruleY([0])
+  ]
+})
+))
+}});
+
+define({id: "2e4d473d", inputs: ["Plot","lightHouseScore","display"], body: async (Plot,lightHouseScore,display) => {
+display(await(
+Plot.plot({
+ title: `Distribuzione della dimensione della pagina`,
+  y: {
+    grid: true,
+    tickFormat: "e"
+  },
+  x: { type: "band",inset:10},
+      color: {legend: false,type:"categorical",scheme: "Observable10"},
+
+  marks: [
+    Plot.boxY(lightHouseScore, {x: "crawlDate", y: "totalByteWeight", fill:"crawlDate"})
+  ]
+})
+))
+}});
+
+define({id: "8f0750e4", inputs: ["Plot","lightHouseScore","display"], body: async (Plot,lightHouseScore,display) => {
+display(await(
+Plot.plot({
+ title: `Distribuzione della dimensione della pagina (meno di 10e6 byte)`,
+  y: {
+    grid: true,
+        tickFormat: "e"
+  },
+  x: { type: "band",inset:1},
+        color: {legend: false,type:"ordinal",scheme: "Observable10"},
+
+  marks: [
+    Plot.boxY(lightHouseScore.toArray().filter((x)=>x.totalByteWeight < 10e6), {x: "crawlDate", y: "totalByteWeight",fill:"crawlDate", mixBlendMode: "multiply"})
+  ]
+})
+))
+}});
+
+define({id: "898f99ac", inputs: ["view","Inputs","lightHouseScore"], outputs: ["filterDateDim"], body: (view,Inputs,lightHouseScore) => {
+const filterDateDim = view(Inputs.select(lightHouseScore.toArray().map(x=>x["crawlDate"]), {sort: "descending", reverse:true, unique: true, label:"Data di crawl"}));
+return {filterDateDim};
+}});
+
+define({id: "a9f6f2bc", inputs: ["Plot","filterDateDim","lightHouseScore","display"], body: async (Plot,filterDateDim,lightHouseScore,display) => {
+display(await(
+Plot.plot({
+ title: `Distribuzione della dimensione della pagina (meno di 10e6 byte - data crawl ${filterDateDim})`,
+  y: {grid: true},
+  x: {tickFormat:"e"},
+    marks: [
+    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.totalByteWeight < 10e6) && (x.crawlDate == filterDateDim)), Plot.binX({y: "count"}, {x: "totalByteWeight",fill:"crawlDate"})),
+    Plot.ruleY([0])
+  ]
+})
+))
+}});
+
+define({id: "d9dd6aa7", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
+display(Inputs.table(await sql`PIVOT (SELECT * FROM entiRes WHERE bootstrap != 'Error') ON bootstrap USING COUNT(Codice_IPA) GROUP BY crawlDate`));
+}});
+
+define({id: "5054e042", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
+display(Inputs.table(await sql`PIVOT (SELECT * FROM entiRes WHERE bootstrap = 'true') ON bootstrapItalia USING COUNT(Codice_IPA) GROUP BY crawlDate`));
+}});
+
+define({id: "27e1d43d", inputs: ["view","Inputs","lightHouseScore"], outputs: ["filterDateBootstrap"], body: (view,Inputs,lightHouseScore) => {
+const filterDateBootstrap = view(Inputs.select(lightHouseScore.toArray().map(x=>x["crawlDate"]), {sort: "descending", reverse:true, unique: true, label:"Data di crawl"}));
+return {filterDateBootstrap};
+}});
+
+define({id: "c454ebb1", inputs: ["resize","Plot","filterDateBootstrap","lightHouseScore","d3","display"], body: async (resize,Plot,filterDateBootstrap,lightHouseScore,d3,display) => {
+display(await(
+resize((width) =>
+Plot.plot({
+  title: `Distribuzione dei tempi con Bootstrap (data crawl ${filterDateBootstrap})`,
+  y: {grid: true},
+  width,
+  color: {legend: true,type:"categorical",scheme: "Observable10"},
+  marks: [
+    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.firstMeaningfulPaint < 9000) && (x.bootstrap == 'true') && (x.crawlDate == filterDateBootstrap)), Plot.binX({y: "count"}, {x: "firstMeaningfulPaint",fill:d3.schemeObservable10[0]})),
+    Plot.ruleY([0])
+  ]
+}))
+))
+}});
+
+define({id: "147073f0", inputs: ["resize","Plot","filterDateBootstrap","lightHouseScore","d3","display"], body: async (resize,Plot,filterDateBootstrap,lightHouseScore,d3,display) => {
+display(await(
+resize((width) =>
+Plot.plot({
+  title: `Distribuzione dei tempi senza Bootstrap (data crawl ${filterDateBootstrap})`,
+  y: {grid: true},
+  width,
+  color: {legend: true,type:"categorical",scheme: "Observable10"},
+  marks: [
+    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.firstMeaningfulPaint < 9000) && (x.bootstrap == 'false') && (x.crawlDate == filterDateBootstrap)), Plot.binX({y: "count"}, {x: "firstMeaningfulPaint",fill:d3.schemeObservable10[1]})),
+    Plot.ruleY([0])
+  ]
+}))
+))
+}});
+
+define({id: "42637ef5", inputs: ["resize","Plot","filterDateBootstrap","lightHouseScore","d3","display"], body: async (resize,Plot,filterDateBootstrap,lightHouseScore,d3,display) => {
+display(await(
+resize((width) =>
+Plot.plot({
+  title: `Distribuzione dei tempi con Bootstrap Italia (data crawl ${filterDateBootstrap})`,
+  y: {grid: true},
+  width,
+  color: {legend: true,type:"categorical",scheme: "Observable10"},
+  marks: [
+    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.firstMeaningfulPaint < 9000) && (x.bootstrapItalia == true) && (x.crawlDate == filterDateBootstrap)), Plot.binX({y: "count"}, {x: "firstMeaningfulPaint",fill:d3.schemeObservable10[0]})),
+    Plot.ruleY([0])
+  ]
+}))
+))
+}});
+
+define({id: "c0aac43e", inputs: ["resize","Plot","filterDateBootstrap","lightHouseScore","d3","display"], body: async (resize,Plot,filterDateBootstrap,lightHouseScore,d3,display) => {
+display(await(
+resize((width) =>
+Plot.plot({
+  title: `Distribuzione dei tempi senza Bootstrap Italia (data crawl ${filterDateBootstrap})`,
+  y: {grid: true},
+  width,
+  color: {legend: true,type:"categorical",scheme: "Observable10"},
+  marks: [
+    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.firstMeaningfulPaint < 9000) && (x.bootstrapItalia == false) && (x.crawlDate == filterDateBootstrap)), Plot.binX({y: "count"}, {x: "firstMeaningfulPaint",fill:d3.schemeObservable10[1]})),
+    Plot.ruleY([0])
+  ]
+}))
+))
+}});
+
+define({id: "e0a426d5", inputs: ["view","Inputs","lightHouseScore"], outputs: ["filterDateTable"], body: (view,Inputs,lightHouseScore) => {
+const filterDateTable = view(Inputs.select(lightHouseScore.toArray().map(x=>x["crawlDate"]), {sort: "descending", reverse:true, unique: true, label:"Data di crawl"}));
+return {filterDateTable};
+}});
+
+define({id: "4b02e905", inputs: ["display","Inputs","sql","filterDateTable"], body: async (display,Inputs,sql,filterDateTable) => {
+display(Inputs.table(await sql`SELECT * FROM entiRes WHERE crawlDate = ${filterDateTable} ORDER BY lightHouseScore DESC`));
+}});
+
+</script>
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type), h2:first-child, :not(h1) + h2">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#in-quanti-enti-%C3%A8-fallito-lighthouse%3F">In quanti enti è fallito Lighthouse?</a></li>
+<li class="observablehq-secondary-link"><a href="#quanti-hanno-risposto-in-https%3F">Quanti hanno risposto in HTTPS?</a></li>
+<li class="observablehq-secondary-link"><a href="#distribuzione-dei-punteggi-lighthouse">Distribuzione dei punteggi lighthouse</a></li>
+<li class="observablehq-secondary-link"><a href="#tempo-necessario-per-avere-un-contenuto-%22significativo%22">Tempo necessario per avere un contenuto &quot;significativo&quot;</a></li>
+<li class="observablehq-secondary-link"><a href="#dimensione-della-pagina-(byte)">Dimensione della pagina (byte)</a></li>
+<li class="observablehq-secondary-link"><a href="#uso-di-bootstrap">Uso di Bootstrap</a></li>
+<li class="observablehq-secondary-link"><a href="#tutti-i-punteggi">Tutti i punteggi</a></li>
+</ol>
+</nav>
+</aside>
+<div id="observablehq-center">
+<main id="observablehq-main" class="observablehq">
+<h1 id="analisi-lighthouse-dei-siti-dei-comuni-italiani" tabindex="-1"><a class="observablehq-header-anchor" href="#analisi-lighthouse-dei-siti-dei-comuni-italiani">Analisi Lighthouse dei siti dei comuni italiani</a></h1>
+<p>Lighthouse è stato fatto girare su tutti i siti dei comuni italiani presenti su IndicePA.</p>
+<h2 id="in-quanti-enti-%C3%A8-fallito-lighthouse%3F" tabindex="-1"><a class="observablehq-header-anchor" href="#in-quanti-enti-%C3%A8-fallito-lighthouse%3F">In quanti enti è fallito Lighthouse?</a></h2>
+<div id="cell-9fdad5ce" class="observablehq observablehq--block"></div>
+<h2 id="quanti-hanno-risposto-in-https%3F" tabindex="-1"><a class="observablehq-header-anchor" href="#quanti-hanno-risposto-in-https%3F">Quanti hanno risposto in HTTPS?</a></h2>
+<div id="cell-70152a65" class="observablehq observablehq--block"></div>
+<div id="cell-d11c16ec" class="observablehq observablehq--block"></div>
+<div id="cell-c9343fb1" class="observablehq observablehq--block observablehq--loading"></div>
+<h2 id="distribuzione-dei-punteggi-lighthouse" tabindex="-1"><a class="observablehq-header-anchor" href="#distribuzione-dei-punteggi-lighthouse">Distribuzione dei punteggi lighthouse</a></h2>
+<div id="cell-ee53ab98" class="observablehq observablehq--block"></div>
+<div id="cell-c316ddd2" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-31b6b911" class="observablehq observablehq--block"></div>
+<div id="cell-797030c2" class="observablehq observablehq--block observablehq--loading"></div>
+<h2 id="tempo-necessario-per-avere-un-contenuto-%22significativo%22" tabindex="-1"><a class="observablehq-header-anchor" href="#tempo-necessario-per-avere-un-contenuto-%22significativo%22">Tempo necessario per avere un contenuto "significativo"</a></h2>
+<div id="cell-425cb3b2" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-4eba0582" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-13a35e83" class="observablehq observablehq--block"></div>
+<div id="cell-770f6358" class="observablehq observablehq--block observablehq--loading"></div>
+<h2 id="dimensione-della-pagina-(byte)" tabindex="-1"><a class="observablehq-header-anchor" href="#dimensione-della-pagina-(byte)">Dimensione della pagina (byte)</a></h2>
+<div id="cell-2e4d473d" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-8f0750e4" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-898f99ac" class="observablehq observablehq--block"></div>
+<div id="cell-a9f6f2bc" class="observablehq observablehq--block observablehq--loading"></div>
+<h2 id="uso-di-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#uso-di-bootstrap">Uso di Bootstrap</a></h2>
+<div id="cell-d9dd6aa7" class="observablehq observablehq--block"></div>
+<h3 id="uso-di-bootstrap-italia-(fra-chi-usa-bootstrap)" tabindex="-1"><a class="observablehq-header-anchor" href="#uso-di-bootstrap-italia-(fra-chi-usa-bootstrap)">Uso di Bootstrap Italia (fra chi usa Bootstrap)</a></h3>
+<div id="cell-5054e042" class="observablehq observablehq--block"></div>
+<div id="cell-27e1d43d" class="observablehq observablehq--block"></div>
+<div class="grid grid-cols-2">
+<div class="card">
+<h3 id="bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#bootstrap">Bootstrap</a></h3>
+<div id="cell-c454ebb1" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-147073f0" class="observablehq observablehq--block observablehq--loading"></div>
+</div>
+<div class="card">
+<h3 id="bootstrap-italia" tabindex="-1"><a class="observablehq-header-anchor" href="#bootstrap-italia">Bootstrap Italia</a></h3>
+<div id="cell-42637ef5" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-c0aac43e" class="observablehq observablehq--block observablehq--loading"></div>
+</div>
+</div>
+<h2 id="tutti-i-punteggi" tabindex="-1"><a class="observablehq-header-anchor" href="#tutti-i-punteggi">Tutti i punteggi</a></h2>
+<div id="cell-e0a426d5" class="observablehq observablehq--block"></div>
+<div id="cell-4b02e905" class="observablehq observablehq--block"></div>
+</main>
+<footer id="observablehq-footer">
+<div>Built with <a href="https://observablehq.com/" target="_blank">Observable</a> on <a title="2024-03-14T18:50:38">Mar 14, 2024</a>.</div>
+</footer>
+</div>
