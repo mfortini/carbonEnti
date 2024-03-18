@@ -17,7 +17,10 @@ UNION SELECT CAST ('2024-03-12' AS DATE) AS crawlDate,* FROM read_csv_auto('${ur
 TO '${filename}' (FORMAT 'PARQUET',CODEC 'ZSTD')"
 
 duckdb -c "SET preserve_insertion_order=false;\
-COPY (SELECT ER.*, IPA.Denominazione_ente FROM read_parquet('${filename}') ER JOIN read_csv_auto('${url_IPA}') IPA ON ER.Codice_IPA = IPA.Codice_IPA)\
+COPY (SELECT CAST (ER.crawlDate AS STRING) as crawlDate,\
+ER.Codice_IPA, ER.url, ER.lightHouseScore,\
+ER.firstMeaningfulPaint, ER.totalByteWeight, ER.bootstrap, ER.bootstrapItalia,\
+IPA.Denominazione_ente, IPA.Codice_comune_ISTAT FROM read_parquet('${filename}') ER JOIN read_csv_auto('${url_IPA}') IPA ON ER.Codice_IPA = IPA.Codice_IPA)\
 TO '${filename2}' (FORMAT 'PARQUET',CODEC 'ZSTD')"
 
 cat "${filename2}"

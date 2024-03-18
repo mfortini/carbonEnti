@@ -6,15 +6,18 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
 <link rel="preload" as="style" href="./_observablehq/theme-cotton.css">
 <link rel="preload" as="style" href="./_observablehq/stdlib/inputs.css">
+<link rel="preload" as="style" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
 <link rel="stylesheet" type="text/css" href="./_observablehq/theme-cotton.css">
 <link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.css">
+<link rel="stylesheet" type="text/css" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="modulepreload" href="./_observablehq/client.js">
 <link rel="modulepreload" href="./_observablehq/runtime.js">
 <link rel="modulepreload" href="./_observablehq/stdlib.js">
 <link rel="modulepreload" href="./_npm/d3@7.9.0/+esm.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/duckdb.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/inputs.js">
+<link rel="modulepreload" href="./_npm/leaflet@1.9.4/+esm.js">
 <link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.14/+esm.js">
 <link rel="modulepreload" href="./_npm/@duckdb/duckdb-wasm@1.28.0/+esm.js">
 <link rel="modulepreload" href="./_npm/htl@0.3.1/+esm.js">
@@ -63,7 +66,8 @@ import {define} from "./_observablehq/client.js";
 import {registerFile, FileAttachment} from "./_observablehq/stdlib.js";
 import {registerTable} from "./_observablehq/stdlib/duckdb.js";
 
-registerFile("./data/entiRes.parquet", {"name":"./data/entiRes.parquet","path":"./_file/data/entiRes.37bb1e45.parquet"});
+registerFile("./data/comuniGeo.json", {"name":"./data/comuniGeo.json","mimeType":"application/json","path":"./_file/data/comuniGeo.921e177c.json"});
+registerFile("./data/entiRes.parquet", {"name":"./data/entiRes.parquet","path":"./_file/data/entiRes.b48c7ba8.parquet"});
 registerTable("entiRes", FileAttachment("./data/entiRes.parquet"));
 
 define({id: "9fdad5ce", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
@@ -94,8 +98,8 @@ marks: [
 ))
 }});
 
-define({id: "ee53ab98", inputs: ["sql"], outputs: ["lightHouseScore"], body: async (sql) => {
-const lightHouseScore = await sql`SELECT  CAST (crawlDate AS STRING) as crawlDate, Codice_IPA, denominazione_ente, url, lightHouseScore, firstMeaningfulPaint, totalByteWeight, bootstrap, bootstrapItalia from entiRes WHERE lightHouseScore > 0`;
+define({id: "7b9a0e50", inputs: ["sql"], outputs: ["lightHouseScore"], body: async (sql) => {
+const lightHouseScore = await sql`SELECT  CAST (crawlDate AS STRING) as crawlDate, Codice_IPA, Codice_comune_ISTAT, denominazione_ente, url, lightHouseScore, firstMeaningfulPaint, totalByteWeight, bootstrap, bootstrapItalia from entiRes WHERE lightHouseScore > 0`;
 return {lightHouseScore};
 }});
 
@@ -330,6 +334,111 @@ define({id: "4b02e905", inputs: ["display","Inputs","sql","filterDateTable"], bo
 display(Inputs.table(await sql`SELECT * FROM entiRes WHERE crawlDate = ${filterDateTable} ORDER BY lightHouseScore DESC`));
 }});
 
+define({id: "aa742cb5", inputs: ["FileAttachment"], outputs: ["comuniGeo"], body: (FileAttachment) => {
+const comuniGeo=FileAttachment("data/comuniGeo.json").json();
+return {comuniGeo};
+}});
+
+define({id: "2c703974", inputs: ["lightHouseScore"], outputs: ["comuniBootstrap"], body: (lightHouseScore) => {
+const comuniBootstrap = new Map(lightHouseScore.toArray().map(({Codice_comune_ISTAT, bootstrap}) => [Codice_comune_ISTAT, bootstrap]))
+return {comuniBootstrap};
+}});
+
+define({id: "87b0f4a7", inputs: ["resize","Plot","comuniGeo","comuniBootstrap","display"], body: async (resize,Plot,comuniGeo,comuniBootstrap,display) => {
+display(await(
+resize((width) =>
+Plot.plot({
+  width,
+  height:width,
+color: {legend:true,type:"categorical"},
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill: (d) => comuniBootstrap.get(d.properties.PRO_COM_T) }, // Fill color depends on bootstrap value
+    {stroke: "black"}
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+))
+}});
+
+define({id: "72de7875", inputs: ["display","L","comuniGeo","comuniBootstrap"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrap) => {
+const div = display(document.createElement("div"));
+div.style = "height: 400px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 5);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        switch (comuniBootstrap.get(feature.properties.PRO_COM_T)) {
+            case "true": return {weight:1, opacity:1, fillOpacity:0.7, color: "#ff0000"};
+            case "false":   return {weight:1, opacity:1,fillOpacity:0.7, color: "#0000ff"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.7, color: "#111111"};
+        }
+    }
+}).addTo(map);
+return {div,map};
+}});
+
+define({id: "92fffc1e", inputs: ["lightHouseScore"], outputs: ["comuniBootstrapItalia"], body: (lightHouseScore) => {
+const comuniBootstrapItalia = new Map(lightHouseScore.toArray().map(({Codice_comune_ISTAT, bootstrapItalia}) => [Codice_comune_ISTAT, bootstrapItalia]))
+return {comuniBootstrapItalia};
+}});
+
+define({id: "1775f624", inputs: ["resize","Plot","comuniGeo","comuniBootstrapItalia","display"], body: async (resize,Plot,comuniGeo,comuniBootstrapItalia,display) => {
+display(await(
+resize((width) =>
+Plot.plot({
+  width,
+  height:width,
+color: {legend:true,type:"categorical"},
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill: (d) => comuniBootstrapItalia.get(d.properties.PRO_COM_T) }, // Fill color depends on bootstrap value
+    {stroke: "black"}
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+))
+}});
+
+define({id: "914f1423", inputs: ["display","L","comuniGeo","comuniBootstrapItalia"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrapItalia) => {
+const div = display(document.createElement("div"));
+div.style = "height: 400px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 5);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        switch (comuniBootstrapItalia.get(feature.properties.PRO_COM_T)) {
+            case true: return {weight:1, opacity:1, fillOpacity:0.7, color: "#ff0000"};
+            case false:   return {weight:1, opacity:1,fillOpacity:0.7, color: "#0000ff"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.7, color: "#111111"};
+        }
+    }
+}).addTo(map);
+return {div,map};
+}});
+
+define({id: "ba37c646", body: () => {
+console.log(true.toString());
+}});
+
 </script>
 <aside id="observablehq-toc" data-selector="h1:not(:first-of-type), h2:first-child, :not(h1) + h2">
 <nav>
@@ -342,6 +451,8 @@ display(Inputs.table(await sql`SELECT * FROM entiRes WHERE crawlDate = ${filterD
 <li class="observablehq-secondary-link"><a href="#dimensione-della-pagina-(byte)">Dimensione della pagina (byte)</a></li>
 <li class="observablehq-secondary-link"><a href="#uso-di-bootstrap">Uso di Bootstrap</a></li>
 <li class="observablehq-secondary-link"><a href="#tutti-i-punteggi">Tutti i punteggi</a></li>
+<li class="observablehq-secondary-link"><a href="#mappa-dei-comuni-che-usano-bootstrap">Mappa dei comuni che usano Bootstrap</a></li>
+<li class="observablehq-secondary-link"><a href="#mappa-dei-comuni-che-usano-bootstrap-italia">Mappa dei comuni che usano Bootstrap Italia</a></li>
 </ol>
 </nav>
 </aside>
@@ -356,7 +467,7 @@ display(Inputs.table(await sql`SELECT * FROM entiRes WHERE crawlDate = ${filterD
 <div id="cell-d11c16ec" class="observablehq observablehq--block"></div>
 <div id="cell-c9343fb1" class="observablehq observablehq--block observablehq--loading"></div>
 <h2 id="distribuzione-dei-punteggi-lighthouse" tabindex="-1"><a class="observablehq-header-anchor" href="#distribuzione-dei-punteggi-lighthouse">Distribuzione dei punteggi lighthouse</a></h2>
-<div id="cell-ee53ab98" class="observablehq observablehq--block"></div>
+<div id="cell-7b9a0e50" class="observablehq observablehq--block"></div>
 <div id="cell-c316ddd2" class="observablehq observablehq--block observablehq--loading"></div>
 <div id="cell-31b6b911" class="observablehq observablehq--block"></div>
 <div id="cell-797030c2" class="observablehq observablehq--block observablehq--loading"></div>
@@ -390,8 +501,18 @@ display(Inputs.table(await sql`SELECT * FROM entiRes WHERE crawlDate = ${filterD
 <h2 id="tutti-i-punteggi" tabindex="-1"><a class="observablehq-header-anchor" href="#tutti-i-punteggi">Tutti i punteggi</a></h2>
 <div id="cell-e0a426d5" class="observablehq observablehq--block"></div>
 <div id="cell-4b02e905" class="observablehq observablehq--block"></div>
+<div id="cell-aa742cb5" class="observablehq observablehq--block"></div>
+<div id="cell-2c703974" class="observablehq observablehq--block"></div>
+<h2 id="mappa-dei-comuni-che-usano-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-dei-comuni-che-usano-bootstrap">Mappa dei comuni che usano Bootstrap</a></h2>
+<div id="cell-87b0f4a7" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-72de7875" class="observablehq observablehq--block"></div>
+<h2 id="mappa-dei-comuni-che-usano-bootstrap-italia" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-dei-comuni-che-usano-bootstrap-italia">Mappa dei comuni che usano Bootstrap Italia</a></h2>
+<div id="cell-92fffc1e" class="observablehq observablehq--block"></div>
+<div id="cell-1775f624" class="observablehq observablehq--block observablehq--loading"></div>
+<div id="cell-914f1423" class="observablehq observablehq--block"></div>
+<div id="cell-ba37c646" class="observablehq observablehq--block"></div>
 </main>
 <footer id="observablehq-footer">
-<div>Built with <a href="https://observablehq.com/" target="_blank">Observable</a> on <a title="2024-03-14T18:50:38">Mar 14, 2024</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank">Observable</a> on <a title="2024-03-18T18:37:54">Mar 18, 2024</a>.</div>
 </footer>
 </div>
