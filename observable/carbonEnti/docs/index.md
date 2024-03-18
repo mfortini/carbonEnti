@@ -43,7 +43,7 @@ marks: [
 ## Distribuzione dei punteggi lighthouse
 
 ```sql id=lightHouseScore
-SELECT  CAST (crawlDate AS STRING) as crawlDate, Codice_IPA, denominazione_ente, url, lightHouseScore, firstMeaningfulPaint, totalByteWeight, bootstrap, bootstrapItalia from entiRes WHERE lightHouseScore > 0
+SELECT  CAST (crawlDate AS STRING) as crawlDate, Codice_IPA, Codice_comune_ISTAT, denominazione_ente, url, lightHouseScore, firstMeaningfulPaint, totalByteWeight, bootstrap, bootstrapItalia from entiRes WHERE lightHouseScore > 0
 ```
 
 ```js
@@ -272,4 +272,105 @@ const filterDateTable = view(Inputs.select(lightHouseScore.toArray().map(x=>x["c
 
 ```sql
 SELECT * FROM entiRes WHERE crawlDate = ${filterDateTable} ORDER BY lightHouseScore DESC
+```
+
+```js
+const comuniGeo=FileAttachment("data/comuniGeo.json").json();
+```
+
+```js
+const comuniBootstrap = new Map(lightHouseScore.toArray().map(({Codice_comune_ISTAT, bootstrap}) => [Codice_comune_ISTAT, bootstrap]))
+```
+
+## Mappa dei comuni che usano Bootstrap
+
+```js
+resize((width) =>
+Plot.plot({
+  width,
+  height:width,
+color: {legend:true,type:"categorical"},
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill: (d) => comuniBootstrap.get(d.properties.PRO_COM_T) }, // Fill color depends on bootstrap value
+    {stroke: "black"}
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+```
+```js
+const div = display(document.createElement("div"));
+div.style = "height: 400px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 5);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        switch (comuniBootstrap.get(feature.properties.PRO_COM_T)) {
+            case "true": return {weight:1, opacity:1, fillOpacity:0.7, color: "#ff0000"};
+            case "false":   return {weight:1, opacity:1,fillOpacity:0.7, color: "#0000ff"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.7, color: "#111111"};
+        }
+    }
+}).addTo(map);
+```
+
+## Mappa dei comuni che usano Bootstrap Italia
+
+```js
+const comuniBootstrapItalia = new Map(lightHouseScore.toArray().map(({Codice_comune_ISTAT, bootstrapItalia}) => [Codice_comune_ISTAT, bootstrapItalia]))
+```
+
+
+```js
+resize((width) =>
+Plot.plot({
+  width,
+  height:width,
+color: {legend:true,type:"categorical"},
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill: (d) => comuniBootstrapItalia.get(d.properties.PRO_COM_T) }, // Fill color depends on bootstrap value
+    {stroke: "black"}
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+```
+
+```js
+const div = display(document.createElement("div"));
+div.style = "height: 400px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 5);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        switch (comuniBootstrapItalia.get(feature.properties.PRO_COM_T)) {
+            case true: return {weight:1, opacity:1, fillOpacity:0.7, color: "#ff0000"};
+            case false:   return {weight:1, opacity:1,fillOpacity:0.7, color: "#0000ff"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.7, color: "#111111"};
+        }
+    }
+}).addTo(map);
+```
+
+```js
+
+console.log(true.toString());
 ```
