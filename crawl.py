@@ -8,6 +8,8 @@ from datetime import datetime
 import re
 import logging
 from multiprocessing.pool import ThreadPool
+from selenium import webdriver
+from xvfbwrapper import Xvfb
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -101,6 +103,38 @@ def checkBootstrap(url):
     return ret
 
 
+def checkBootstrap2(url):
+    ret={}
+    with Xvfb() as xvfb:
+        webdrv = webdriver.Firefox()
+        try:
+            url = url.replace(r"http://", "").replace(r"https://", "")
+            url = "https://" + url
+            logging.info("checkBootstrap2 {}".format(url))
+
+            webdrv.get(url)
+            ret["url"] = url
+            ret["bootstrapItaliaVariable"]=webdrv.execute_script('return window.BOOTSTRAP_ITALIA_VERSION;')
+            ret["bootstrapItaliaMethod"]=webdrv.execute_script('return getComputedStyle(document.body).getPropertyValue("--bootstrap-italia-version");')
+
+        except Exception as e:
+            logging.debug(e)
+            try:
+                url = url.replace(r"http://", "").replace(r"https://", "")
+                url = "http://" + url
+                logging.info("checkBootstrap2 {}".format(url))
+                webdrv.get(url)
+                ret["url"] = url
+                ret["bootstrapItaliaVariable"]=webdrv.execute_script('return window.BOOTSTRAP_ITALIA_VERSION;')
+                ret["bootstrapItaliaMethod"]=webdrv.execute_script('return getComputedStyle(document.body).getPropertyValue("--bootstrap-italia-version");')
+            except Exception as e:
+                logging.debug(e)
+                ret["url"] = url
+                ret["bootstrapItaliaVariable"]=None
+                ret["bootstrapItaliaMethod"]=None
+
+    return ret
+
 def crawlComune(comune, outputDir, cfg):
     logging.info("crawlComune {}".format(comune["Denominazione_ente"]))
     tsNow = datetime.now().timestamp()
@@ -153,8 +187,9 @@ def crawlComune(comune, outputDir, cfg):
                 print("Error carbonRes", carbonRes)
 
             bootstrapRes = checkBootstrap(comune["Sito_istituzionale"])
-
             res["bootstrapItalia"] = bootstrapRes
+            bootstrapRes2 = checkBootstrap2(comune["Sito_istituzionale"])
+            res["bootstrapItalia2"] = bootstrapRes2
 
             if res is not None:
                 print(res)
