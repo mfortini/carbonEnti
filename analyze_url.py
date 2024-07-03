@@ -175,6 +175,8 @@ def checkBootstrap2(url):
                 ret["url"] = url
                 ret["bootstrapItaliaVariable"]=None
                 ret["bootstrapItaliaMethod"]=None
+                ret["bootstrapItalia"]=None
+                ret["bootstrap"]=None
 
 
     return ret
