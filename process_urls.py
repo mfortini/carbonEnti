@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import json
 import logging
+from pathlib import Path
 from datetime import datetime
 from multiprocessing.pool import ThreadPool
 from subprocess import run
@@ -53,6 +54,8 @@ def crawlEnte(ente, outputDir, cfg):
                 res = json.load(rf)
                 res["Codice_IPA"] = codiceIPA
                 res["ts"] = tsNow
+
+            Path(result_file).unlink(missing_ok=True)
 
             if res is not None:
                 print(res)
