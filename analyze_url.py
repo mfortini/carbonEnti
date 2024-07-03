@@ -200,7 +200,8 @@ def analyze_url(url):
             "total-byte-weight": carbonRes["rawResult"]["audits"]["total-byte-weight"],
             "resource-summary": carbonRes["rawResult"]["audits"]["resource-summary"],
             "accessibility": carbonRes["rawResult"]["categories"]["accessibility"]["score"],
-            "lighthouseRawResult": carbonRes["rawResult"],
+            "full-page-screenshot": carbonRes["rawResult"]["audits"]["full-page-screenshot"],
+#            "lighthouseRawResult": carbonRes["rawResult"],
         }
     except KeyError:
         print("Error carbonRes", carbonRes)
