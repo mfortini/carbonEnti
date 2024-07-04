@@ -15,17 +15,19 @@ def carbonResults(url):
     try:
         url = url.replace(r"http://", "").replace(r"https://", "")
         url = "https://" + url
-        logging.info(url)
+        logging.info("carbonResults {}".format(url))
         res = subprocess.run(["node", "carbon.js", url], capture_output=True, text=True)
 
         ret = json.loads(res.stdout)
         ret["url"] = url
+        if ret["lighthouseScore"] == 0:
+            raise ValueError
         return ret
-    except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError):
+    except Exception as e:
         try:
             url = url.replace(r"http://", "").replace(r"https://", "")
             url = "http://" + url
-            logging.info(url)
+            logging.info("carbonResults {}".format(url))
             res = subprocess.run(
                 ["node", "carbon.js", url], capture_output=True, text=True
             )
@@ -33,57 +35,10 @@ def carbonResults(url):
             ret = json.loads(res.stdout)
             ret["url"] = url
             return ret
-        except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError):
-            logging.error("Error {}".format(url))
+        except Exception as e:
+            logging.error("Error {} {}".format(url,e))
             return {"lighthouse": "Error", "score": 0, "url": url}
 
-
-def checkBootstrap(url):
-    try:
-        url = url.replace(r"http://", "").replace(r"https://", "")
-        url = "https://" + url
-        logging.info(url)
-        res = subprocess.run(
-            ["node", "checkBootstrap.js", url], capture_output=True, text=True
-        )
-
-        ret = json.loads(res.stdout)
-        ret["url"] = url
-    except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError) as e:
-        logging.debug("stdout {}".format(res.stdout))
-        logging.debug(e)
-        try:
-            url = url.replace(r"http://", "").replace(r"https://", "")
-            url = "http://" + url
-            logging.info(url)
-            res = subprocess.run(
-                ["node", "checkBootstrap.js", url], capture_output=True, text=True
-            )
-            ret = json.loads(res.stdout)
-            ret["url"] = url
-        except (subprocess.SubprocessError, json.JSONDecodeError, AttributeError) as e:
-            logging.debug(e)
-            logging.debug("stdout {}".format(res.stdout))
-            logging.error("Error {}".format(url))
-            return {"bootstrap": "Error", "url": url}
-
-    bootstrapGen = False
-    bootstrapItalia = False
-    for (k, e) in ret.items():
-        if re.match(r".*(js|css)$", k, re.IGNORECASE):
-            logging.debug("key {} matches".format(k))
-            if re.match(
-                r".*bootstrap.{0,16}italia.*", "{}".format(k), re.IGNORECASE
-            ) or re.match(r".*bootstrap.{0,16}italia.*", "{}".format(e), re.IGNORECASE):
-                bootstrapItalia = True
-
-            if re.match(r".*bootstrap.*", "{}".format(k), re.IGNORECASE) or re.match(
-                r".*bootstrap.*", "{}".format(e), re.IGNORECASE
-            ):
-                bootstrapGen = True
-
-    ret = {"bootstrap": bootstrapGen, "bootstrapItalia": bootstrapItalia}
-    return ret
 
 BI_patterns={
         "bootstrapItalia": r"bootstrap.{0,16}italia",
@@ -102,6 +57,8 @@ def fetch_and_search(url, patterns):
             if re.search(pattern, content, re.IGNORECASE):
                 ret[pat_name]=True
                 logging.debug(f"Pattern '{pattern}' found in {url}")
+            else:
+                ret[pat_name]=False
     except requests.RequestException as e:
         logging.debug(f"Failed to fetch {url}: {e}")
 
@@ -113,8 +70,6 @@ def checkBootstrap2(url):
     with Xvfb() as xvfb:
         webdrv = webdriver.Firefox()
         try:
-            url = url.replace(r"http://", "").replace(r"https://", "")
-            url = "https://" + url
             logging.info("checkBootstrap2 {}".format(url))
 
             webdrv.get(url)
@@ -140,43 +95,13 @@ def checkBootstrap2(url):
             for url in css_urls:
                 ret.update(fetch_and_search(url, BI_patterns))
 
-
         except Exception as e:
             logging.debug(e)
-            try:
-                url = url.replace(r"http://", "").replace(r"https://", "")
-                url = "http://" + url
-                logging.info("checkBootstrap2 {}".format(url))
-                webdrv.get(url)
-                ret["url"] = url
-                ret["bootstrapItaliaVariable"]=webdrv.execute_script('return window.BOOTSTRAP_ITALIA_VERSION;')
-                ret["bootstrapItaliaMethod"]=webdrv.execute_script('return getComputedStyle(document.body).getPropertyValue("--bootstrap-italia-version");')
-
-                js_files = webdrv.find_elements(By.XPATH, "//script[@src]")
-                css_files = webdrv.find_elements(By.XPATH, "//link[@rel='stylesheet'][@href]")
-
-                # Extract the URLs
-                js_urls = [js.get_attribute('src') for js in js_files]
-                css_urls = [css.get_attribute('href') for css in css_files]
-
-                logging.debug("js_urls {}".format(js_urls))
-                logging.debug("css_urls {}".format(css_urls))
-
-                # Search patterns in JS files
-                for url in js_urls:
-                    ret.update(fetch_and_search(url, BI_patterns))
-
-                # Search patterns in CSS files
-                for url in css_urls:
-                    ret.update(fetch_and_search(url, BI_patterns))
-
-            except Exception as e:
-                logging.debug(e)
-                ret["url"] = url
-                ret["bootstrapItaliaVariable"]=None
-                ret["bootstrapItaliaMethod"]=None
-                ret["bootstrapItalia"]=None
-                ret["bootstrap"]=None
+            ret["url"] = url
+            ret["bootstrapItaliaVariable"]=None
+            ret["bootstrapItaliaMethod"]=None
+            ret["bootstrapItalia"]=None
+            ret["bootstrap"]=None
         webdrv.quit()
 
 
@@ -210,7 +135,7 @@ def analyze_url(url):
 
     #bootstrapRes = checkBootstrap(url)
     #res["bootstrapItalia"] = bootstrapRes
-    bootstrapRes2 = checkBootstrap2(url)
+    bootstrapRes2 = checkBootstrap2(res["url"])
     res["bootstrapItalia"] = bootstrapRes2
 
     return res
