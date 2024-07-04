@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 
 from xvfbwrapper import Xvfb
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 def carbonResults(url):
@@ -108,7 +108,7 @@ def fetch_and_search(url, patterns):
     return ret
 
 def checkBootstrap2(url):
-    logging.info("checkBootstrap2")
+    logging.info("checkBootstrap2 {}".format(url))
     ret={}
     with Xvfb() as xvfb:
         webdrv = webdriver.Firefox()
@@ -177,6 +177,7 @@ def checkBootstrap2(url):
                 ret["bootstrapItaliaMethod"]=None
                 ret["bootstrapItalia"]=None
                 ret["bootstrap"]=None
+        webdrv.quit()
 
 
     return ret
@@ -187,7 +188,7 @@ def analyze_url(url):
     # remove useless screenshots
     if "rawResult" in carbonRes:
         del carbonRes["rawResult"]["audits"]["screenshot-thumbnails"]
-        del carbonRes["rawResult"]["audits"]["final-screenshot"]
+        #del carbonRes["rawResult"]["audits"]["final-screenshot"]
         #del carbonRes["rawResult"]["audits"]["full-page-screenshot"]
 
     res = None
@@ -200,11 +201,12 @@ def analyze_url(url):
             "total-byte-weight": carbonRes["rawResult"]["audits"]["total-byte-weight"],
             "resource-summary": carbonRes["rawResult"]["audits"]["resource-summary"],
             "accessibility": carbonRes["rawResult"]["categories"]["accessibility"]["score"],
+            "final-screenshot": carbonRes["rawResult"]["audits"]["final-screenshot"],
             "full-page-screenshot": carbonRes["rawResult"]["audits"]["full-page-screenshot"],
 #            "lighthouseRawResult": carbonRes["rawResult"],
         }
-    except KeyError:
-        print("Error carbonRes", carbonRes)
+    except Exception as e:
+        logging.error("Error {}".format(e))
 
     #bootstrapRes = checkBootstrap(url)
     #res["bootstrapItalia"] = bootstrapRes
