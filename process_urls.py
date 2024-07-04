@@ -47,13 +47,18 @@ def crawlEnte(ente, outputDir, cfg):
 
         if rerun:
             url = ente["Sito_istituzionale"]
+            logging.info("Rerun {}".format(url))
             result_file = os.path.join(outputDir, f"{codiceIPA}_result.json")
             run(["python3", "analyze_url.py", url, "-o", result_file])
 
-            with open(result_file, "r") as rf:
-                res = json.load(rf)
-                res["Codice_IPA"] = codiceIPA
-                res["ts"] = tsNow
+            try:
+                with open(result_file, "r") as rf:
+                    res = json.load(rf)
+                    res["Codice_IPA"] = codiceIPA
+                    res["ts"] = tsNow
+            except Exception as e:
+                logging.error(e)
+                pass
 
             Path(result_file).unlink(missing_ok=True)
 
@@ -73,7 +78,11 @@ def main():
 
     crawlList = pd.read_csv(cfg["list"])
 
-    entiList = crawlList[crawlList["Codice_natura"] == 2430]
+    # Filtra solo i comuni
+    if False:
+        entiList = crawlList[crawlList["Codice_natura"] == 2430]
+    else:
+        entiList = crawlList
 
     # Randomize list
     entiList = entiList.sample(frac=1).reset_index(drop=True)
