@@ -49,7 +49,7 @@ def crawlEnte(ente, outputDir, cfg):
             url = ente["Sito_istituzionale"]
             logging.info("Rerun {}".format(url))
             result_file = os.path.join(outputDir, f"{codiceIPA}_result.json")
-            run(["python3", "analyze_url.py", url, "-o", result_file])
+            run(["python", "analyze_url.py", url, "-o", result_file])
 
             try:
                 with open(result_file, "r") as rf:
@@ -97,6 +97,7 @@ def main():
     tp = ThreadPool()
     for idx, ente in entiList.iterrows():
         tp.apply_async(crawlEnte, (ente, outputDir, cfg))
+        #crawlEnte(ente,outputDir,cfg)
 
     tp.close()
     tp.join()
