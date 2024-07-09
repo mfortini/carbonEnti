@@ -16,21 +16,24 @@ def carbonResults(url):
         url = url.replace(r"http://", "").replace(r"https://", "")
         url = "https://" + url
         logging.info("carbonResults {}".format(url))
-        res = subprocess.run(["node", "carbon.js", url], capture_output=True, text=True)
+        #res = subprocess.run(["node", "carbon.js", url], capture_output=True, text=True)
+        res = subprocess.run(["./carbon.sh", url], capture_output=True, text=True)
 
         ret = json.loads(res.stdout)
         ret["url"] = url
-        if ret["lighthouseScore"] == 0:
+        if ret["score"] == 0:
             raise ValueError
         return ret
     except Exception as e:
+        logging.error("Error {} {}".format(url,e))
         try:
             url = url.replace(r"http://", "").replace(r"https://", "")
             url = "http://" + url
             logging.info("carbonResults {}".format(url))
-            res = subprocess.run(
-                ["node", "carbon.js", url], capture_output=True, text=True
-            )
+            #res = subprocess.run(
+            #    ["node", "carbon.js", url], capture_output=True, text=True
+            #)
+            res = subprocess.run(["./carbon.sh", url], capture_output=True, text=True)
 
             ret = json.loads(res.stdout)
             ret["url"] = url
@@ -57,8 +60,6 @@ def fetch_and_search(url, patterns):
             if re.search(pattern, content, re.IGNORECASE):
                 ret[pat_name]=True
                 logging.debug(f"Pattern '{pattern}' found in {url}")
-            else:
-                ret[pat_name]=False
     except requests.RequestException as e:
         logging.debug(f"Failed to fetch {url}: {e}")
 
@@ -70,8 +71,6 @@ def checkBootstrap2(url):
     with Xvfb() as xvfb:
         webdrv = webdriver.Firefox()
         try:
-            logging.info("checkBootstrap2 {}".format(url))
-
             webdrv.get(url)
             ret["url"] = url
             ret["bootstrapItaliaVariable"]=webdrv.execute_script('return window.BOOTSTRAP_ITALIA_VERSION;')
@@ -94,6 +93,10 @@ def checkBootstrap2(url):
             # Search patterns in CSS files
             for url in css_urls:
                 ret.update(fetch_and_search(url, BI_patterns))
+
+            for pat_name in BI_patterns.keys():
+                if pat_name not in ret:
+                    ret[pat_name] = False
 
         except Exception as e:
             logging.debug(e)
@@ -127,9 +130,14 @@ def analyze_url(url):
             "resource-summary": carbonRes["rawResult"]["audits"]["resource-summary"],
             "accessibility": carbonRes["rawResult"]["categories"]["accessibility"]["score"],
             "final-screenshot": carbonRes["rawResult"]["audits"]["final-screenshot"],
-            "full-page-screenshot": carbonRes["rawResult"]["audits"]["full-page-screenshot"],
 #            "lighthouseRawResult": carbonRes["rawResult"],
         }
+        try:
+            res["full-page-screenshot"]=carbonRes["rawResult"]["fullPageScreenshot"]
+        except KeyError:
+            res["full-page-screenshot"]=None
+            pass
+
     except Exception as e:
         logging.error("Error {}".format(e))
 
