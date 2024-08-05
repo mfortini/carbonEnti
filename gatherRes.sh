@@ -1,2 +1,4 @@
+#! /bin/bash
+
 echo "Codice_IPA,url,lighthouseScore,firstMeaningfulPaint,totalByteWeight,bootstrap,bootstrapItalia,bootstrap2_js,bootstrap2_css" > entiRes.csv
-find entiRes -name \*.json -exec jq -r '[.Codice_IPA,.url,.lighthouseScore,."first-meaningful-paint".numericValue,."total-byte-weight".numericValue,.bootstrapItalia.bootstrap,.bootstrapItalia.bootstrapItalia,.bootstrapItalia2.bootstrapItaliaVariable,.bootstrapItalia2.bootstrapItaliaMethod] | @csv' '{}' \; | tee -a entiRes.csv
+find entiRes -name \*.json -exec ./gatherResEnte.sh '{}' \; | tee -a entiRes.csv
