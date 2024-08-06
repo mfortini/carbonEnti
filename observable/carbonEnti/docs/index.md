@@ -13,7 +13,7 @@ Lighthouse è stato fatto girare su tutti i siti dei comuni italiani presenti su
 ## In quanti enti è fallito Lighthouse?
 
 ```sql
-SELECT CAST (crawlDate AS STRING) as crawlDate, COUNT(Codice_IPA) FROM entiRes where lighthouseScore = 0 GROUP BY crawlDate ORDER BY crawlDate
+SELECT CAST (crawlDate AS STRING) as crawlDate, COUNT(Codice_IPA) FROM entiRes where lighthouseScore = 0 OR lighthouseScore IS NULL GROUP BY crawlDate ORDER BY crawlDate
 ```
 
 ## Quanti hanno risposto in HTTPS?
