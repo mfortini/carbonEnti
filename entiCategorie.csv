@@ -1,0 +1,53 @@
+﻿_id,Codice_categoria,Nome_categoria,Tipologia_categoria,SFE,UTD,NSO,AOO,UO
+1,C17,Enti di Previdenza ed Assistenza Sociale in Conto Economico Consolidato privati ,Enti Nazionali di Previdenza ed Assistenza Sociale in Conto Economico Consolidato,P,A,P,A,P
+2,C16,Enti di Previdenza ed Assistenza Sociale in Conto Economico Consolidato pubblici,Enti Nazionali di Previdenza ed Assistenza Sociale in Conto Economico Consolidato,P,P,P,P,P
+3,L37,Gestori di Pubblici Servizi,Gestori di Pubblici Servizi,A,P,A,P,P
+4,SAG,Stazioni Appaltanti Gestori di Pubblici Servizi,Gestori di Pubblici Servizi,P,P,A,P,P
+5,L10,Agenzie ed Enti per il Turismo,Pubbliche Amministrazioni,P,P,P,P,P
+6,L19,Agenzie ed Enti Regionali del Lavoro,Pubbliche Amministrazioni,P,P,P,P,P
+7,L13,Agenzie ed Enti Regionali di Sviluppo Agricolo,Pubbliche Amministrazioni,P,P,P,P,P
+8,L2,"Agenzie ed Enti Regionali per la Formazione, la Ricerca e l'Ambiente",Pubbliche Amministrazioni,P,P,P,P,P
+9,C10,Agenzie Fiscali,Pubbliche Amministrazioni,P,P,P,P,P
+10,L20,Agenzie Regionali e Provinciale per la Rappresentanza Negoziale,Pubbliche Amministrazioni,P,P,P,P,P
+11,L21,Agenzie Regionali per le Erogazioni in Agricoltura,Pubbliche Amministrazioni,P,P,P,P,P
+12,L22,Agenzie Regionali Sanitarie,Pubbliche Amministrazioni,P,P,P,P,P
+13,L15,"Agenzie, Enti e Consorzi Pubblici per il Diritto allo Studio Universitario",Pubbliche Amministrazioni,P,P,P,P,P
+14,L1,Altri Enti Locali,Pubbliche Amministrazioni,P,P,P,P,P
+15,C13,Automobile Club Federati ACI,Pubbliche Amministrazioni,P,P,P,P,P
+16,C5,Autorita' Amministrative Indipendenti,Pubbliche Amministrazioni,P,P,P,P,P
+17,L40,Autorita' di Bacino,Pubbliche Amministrazioni,P,P,P,P,P
+18,L11,Autorita' Portuali,Pubbliche Amministrazioni,P,P,P,P,P
+19,L39,Aziende e Consorzi Pubblici Territoriali per l'Edilizia Residenziale,Pubbliche Amministrazioni,P,P,P,P,P
+20,L46,Aziende ed Amministrazioni dello Stato ad Ordinamento Autonomo,Pubbliche Amministrazioni,P,P,P,P,P
+21,L8,"Aziende Ospedaliere, Aziende Ospedaliere Universitarie, Policlinici e Istituti di Ricovero e Cura a Carattere Scientifico Pubblici",Pubbliche Amministrazioni,P,P,P,P,P
+22,L34,Aziende Pubbliche di Servizi alla Persona,Pubbliche Amministrazioni,P,P,P,P,P
+23,L7,Aziende Sanitarie Locali,Pubbliche Amministrazioni,P,P,P,P,P
+24,L35,"Camere di Commercio, Industria, Artigianato e Agricoltura e loro Unioni Regionali",Pubbliche Amministrazioni,P,P,P,P,P
+25,L45,Citta' Metropolitane,Pubbliche Amministrazioni,P,P,P,P,P
+26,L47,Commissari Straordinari Governativi,Pubbliche Amministrazioni,P,P,P,P,P
+27,L6,Comuni e loro Consorzi e Associazioni,Pubbliche Amministrazioni,P,P,P,P,P
+28,L12,Comunita' Montane e loro Consorzi e Associazioni,Pubbliche Amministrazioni,P,P,P,P,P
+29,L24,Consorzi di Bacino Imbrifero Montano,Pubbliche Amministrazioni,P,P,P,P,P
+30,L28,Consorzi Interuniversitari di Ricerca,Pubbliche Amministrazioni,P,P,P,P,P
+31,L42,Consorzi per l'Area di Sviluppo Industriale,Pubbliche Amministrazioni,P,P,P,P,P
+32,L36,Consorzi tra Amministrazioni Locali,Pubbliche Amministrazioni,P,P,P,P,P
+33,L44,Enti di Regolazione dei Servizi Idrici e o dei Rifiuti,Pubbliche Amministrazioni,P,P,P,P,P
+34,C8,Enti e Istituzioni di Ricerca Pubblici,Pubbliche Amministrazioni,P,P,P,P,P
+35,C3,Enti Pubblici Non Economici,Pubbliche Amministrazioni,P,P,P,P,P
+36,C7,"Enti Pubblici Produttori di Servizi Assistenziali, Ricreativi e Culturali ",Pubbliche Amministrazioni,P,P,P,P,P
+37,C14,"Federazioni Nazionali, Ordini, Collegi e Consigli Professionali",Pubbliche Amministrazioni,P,P,P,P,P
+38,L16,"Fondazioni Lirico, Sinfoniche",Pubbliche Amministrazioni,P,P,P,P,P
+39,C11,Forze di Polizia ad Ordinamento Civile e Militare per la Tutela dell'Ordine e della Sicurezza Pubblica,Pubbliche Amministrazioni,P,P,P,P,P
+40,L33,Istituti di Istruzione Statale di Ogni Ordine e Grado,Pubbliche Amministrazioni,P,P,P,P,P
+41,C12,Istituti Zooprofilattici Sperimentali,Pubbliche Amministrazioni,P,P,P,P,P
+42,L43,"Istituzioni per l'Alta Formazione Artistica, Musicale e Coreutica - AFAM",Pubbliche Amministrazioni,P,P,P,P,P
+43,C2,Organi Costituzionali e di Rilievo Costituzionale,Pubbliche Amministrazioni,P,P,P,P,P
+44,L38,"Parchi Nazionali, Consorzi e Enti Gestori di Parchi e Aree Naturali Protette",Pubbliche Amministrazioni,P,P,P,P,P
+45,C1,"Presidenza del Consiglio dei Ministri, Ministeri e Avvocatura dello Stato",Pubbliche Amministrazioni,P,P,P,P,P
+46,L5,Province e loro Consorzi e Associazioni,Pubbliche Amministrazioni,P,P,P,P,P
+47,L4,"Regioni, Province Autonome e loro Consorzi e Associazioni",Pubbliche Amministrazioni,P,P,P,P,P
+48,L31,Teatri Stabili ad Iniziativa Pubblica,Pubbliche Amministrazioni,P,P,P,P,P
+49,L18,Unioni di Comuni e loro Consorzi e Associazioni,Pubbliche Amministrazioni,P,P,P,P,P
+50,L17,Universita' e Istituti di Istruzione Universitaria Pubblici,Pubbliche Amministrazioni,P,P,P,P,P
+51,S01,Societa' in Conto Economico Consolidato,Societa' in Conto Economico Consolidato,P,A,P,A,P
+52,SA,Stazioni Appaltanti,Stazioni Appaltanti,P,P,A,A,P
