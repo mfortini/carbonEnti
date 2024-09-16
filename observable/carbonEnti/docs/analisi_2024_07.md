@@ -481,7 +481,14 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 })
   .addTo(map);
 
-const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+
+const colors=[
+  '#7abdff',
+'#66abf5',
+'#519aeb',
+'#3d88e1',
+'#2677d7',
+'#0066cc'];
 
 function getColorForValue(value, breaks, default_color) {
     for (let i = 0; i < breaks.length - 1; i++) {
@@ -599,7 +606,14 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 })
   .addTo(map);
 
-const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+
+const colors=[
+  '#7abdff',
+'#66abf5',
+'#519aeb',
+'#3d88e1',
+'#2677d7',
+'#0066cc'];
 
 
 L.geoJSON(comuniGeo.features, 
@@ -731,7 +745,13 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 })
   .addTo(map);
 
-const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+const colors=[
+  '#7abdff',
+'#66abf5',
+'#519aeb',
+'#3d88e1',
+'#2677d7',
+'#0066cc'];
 
 L.geoJSON(comuniGeo.features, 
 {
