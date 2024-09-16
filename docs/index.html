@@ -70,10 +70,6 @@ registerFile("./data/comuniGeo.json", {"name":"./data/comuniGeo.json","mimeType"
 registerFile("./data/entiRes.parquet", {"name":"./data/entiRes.parquet","path":"./_file/data/entiRes.cc10f4d7.parquet","lastModified":1726079322671});
 registerTable("entiRes", FileAttachment("./data/entiRes.parquet"));
 
-define({id: "148bfd98", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
-display(Inputs.table(await sql`SELECT * FROM entiRes LIMIT 10;`));
-}});
-
 define({id: "70002472", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
 display(Inputs.table(await sql`SELECT CAST (crawlDate AS STRING) as crawlDate, COUNT(Codice_IPA) FROM entiRes where lighthouseScore = 0 OR lighthouseScore IS NULL GROUP BY crawlDate ORDER BY crawlDate`));
 }});
@@ -453,8 +449,6 @@ console.log(true.toString());
   </ol>
   <ol>
     <li class="observablehq-link"><a href="./analisi_2024_07">Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane (2024-07)</a></li>
-    <li class="observablehq-link"><a href="./data/venv/lib/python3.12/site-packages/numpy/random/LICENSE">NCSA Open Source License</a></li>
-    <li class="observablehq-link"><a href="./data/venv/lib/python3.12/site-packages/pyarrow/tests/data/orc/README">Untitled</a></li>
   </ol>
 </nav>
 <script>{Object.assign(document.createElement("a"),{href:""}).password&&location.replace(location.href);const e=document.querySelector("#observablehq-sidebar"),t=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?t.checked=r==="true":t.indeterminate=!0;for(const o of document.querySelectorAll("#observablehq-sidebar summary")){const s=o.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${o.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
@@ -476,7 +470,6 @@ console.log(true.toString());
 </aside>
 <div id="observablehq-center">
 <main id="observablehq-main" class="observablehq">
-<div class="observablehq observablehq--block"><!--:148bfd98:--></div>
 <h1 id="analisi-lighthouse-dei-siti-dei-comuni-italiani" tabindex="-1"><a class="observablehq-header-anchor" href="#analisi-lighthouse-dei-siti-dei-comuni-italiani">Analisi Lighthouse dei siti dei comuni italiani</a></h1>
 <p>Lighthouse è stato fatto girare su tutti i siti dei comuni italiani presenti su IndicePA.</p>
 <h2 id="in-quanti-enti-%C3%A8-fallito-lighthouse%3F" tabindex="-1"><a class="observablehq-header-anchor" href="#in-quanti-enti-%C3%A8-fallito-lighthouse%3F">In quanti enti è fallito Lighthouse?</a></h2>
@@ -533,6 +526,6 @@ console.log(true.toString());
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="next" href="./analisi_2024_07"><span>Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane (2024-07)</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-09-16T18:58:49">Sep 16, 2024</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-09-16T19:11:41">Sep 16, 2024</a>.</div>
 </footer>
 </div>

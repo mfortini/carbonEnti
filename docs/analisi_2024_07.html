@@ -382,7 +382,7 @@ color: {legend:true,type:"categorical",
 ))
 }});
 
-define({id: "1016175f", inputs: ["display","L","comuniGeo","comuniBootstrap"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrap) => {
+define({id: "6661fea4", inputs: ["display","L","comuniGeo","comuniBootstrap"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrap) => {
 const div = display(document.createElement("div"));
 div.style = "height: 1200px;";
 
@@ -398,8 +398,8 @@ L.geoJSON(comuniGeo.features,
 {
     style: function(feature) {
         switch (comuniBootstrap.get(feature.properties.PRO_COM_T)) {
-            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
-            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
+            case true: return {weight:1, opacity:1, fillOpacity:0.9, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.9, color: "lightgrey"};
         }
     }
 }).addTo(map);
@@ -526,7 +526,7 @@ color: {legend:true},
 return {jenks,numClasses,breaks};
 }});
 
-define({id: "f066e5f1", inputs: ["display","L","comuniGeo","scuoleBootstrap","breaks"], outputs: ["div","map","colors","getColorForValue"], body: (display,L,comuniGeo,scuoleBootstrap,breaks) => {
+define({id: "93cd7eff", inputs: ["display","L","comuniGeo","scuoleBootstrap","breaks"], outputs: ["div","map","colors","getColorForValue"], body: (display,L,comuniGeo,scuoleBootstrap,breaks) => {
 const div = display(document.createElement("div"));
 div.style = "height: 1200px;";
 
@@ -538,7 +538,14 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 })
   .addTo(map);
 
-const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+
+const colors=[
+  '#7abdff',
+'#66abf5',
+'#519aeb',
+'#3d88e1',
+'#2677d7',
+'#0066cc'];
 
 function getColorForValue(value, breaks, default_color) {
     for (let i = 0; i < breaks.length - 1; i++) {
@@ -552,7 +559,7 @@ function getColorForValue(value, breaks, default_color) {
 L.geoJSON(comuniGeo.features, 
 {
     style: function(feature) {
-        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
+        return {weight:0.5, opacity:1, fillOpacity:0.9, fillColor: getColorForValue(scuoleBootstrap.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
         }
 }).addTo(map);
 return {div,map,colors,getColorForValue};
@@ -587,7 +594,7 @@ color: {legend:true,type:"categorical",
 ))
 }});
 
-define({id: "1902490f", inputs: ["display","L","comuniGeo","comuniBootstrapItalia"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrapItalia) => {
+define({id: "5b0464cc", inputs: ["display","L","comuniGeo","comuniBootstrapItalia"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrapItalia) => {
 const div = display(document.createElement("div"));
 div.style = "height: 1200px;";
 
@@ -603,8 +610,8 @@ L.geoJSON(comuniGeo.features,
 {
     style: function(feature) {
         switch (comuniBootstrapItalia.get(feature.properties.PRO_COM_T)) {
-            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
-            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
+            case true: return {weight:1, opacity:1, fillOpacity:0.9, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.9, color: "lightgrey"};
         }
     }
 }).addTo(map);
@@ -643,7 +650,7 @@ color: {legend:true},
 return {breaks_scuole_BI};
 }});
 
-define({id: "9f99050c", inputs: ["display","L","comuniGeo","getColorForValue","scuoleBootstrap_Italia","breaks"], outputs: ["div","map","colors"], body: (display,L,comuniGeo,getColorForValue,scuoleBootstrap_Italia,breaks) => {
+define({id: "2dd97010", inputs: ["display","L","comuniGeo","getColorForValue","scuoleBootstrap_Italia","breaks"], outputs: ["div","map","colors"], body: (display,L,comuniGeo,getColorForValue,scuoleBootstrap_Italia,breaks) => {
 const div = display(document.createElement("div"));
 div.style = "height: 1200px;";
 
@@ -655,13 +662,20 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 })
   .addTo(map);
 
-const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+
+const colors=[
+  '#7abdff',
+'#66abf5',
+'#519aeb',
+'#3d88e1',
+'#2677d7',
+'#0066cc'];
 
 
 L.geoJSON(comuniGeo.features, 
 {
     style: function(feature) {
-        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap_Italia.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
+        return {weight:0.5, opacity:1, fillOpacity:0.9, fillColor: getColorForValue(scuoleBootstrap_Italia.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
         }
 }).addTo(map);
 return {div,map,colors};
@@ -712,7 +726,7 @@ color: {legend:true,type:"categorical",
 ))
 }});
 
-define({id: "ee342913", inputs: ["display","L","comuniGeo","comuniBootstrap_css"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrap_css) => {
+define({id: "e869c24e", inputs: ["display","L","comuniGeo","comuniBootstrap_css"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrap_css) => {
 const div = display(document.createElement("div"));
 div.style = "height: 1200px;";
 
@@ -728,8 +742,8 @@ L.geoJSON(comuniGeo.features,
 {
     style: function(feature) {
         switch (comuniBootstrap_css.get(feature.properties.PRO_COM_T)) {
-            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
-            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
+            case true: return {weight:1, opacity:1, fillOpacity:0.9, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.9, color: "lightgrey"};
         }
     }
 }).addTo(map);
@@ -789,7 +803,7 @@ color: {legend:true},
 return {scuole_css_numClasses,scuole_css_breaks};
 }});
 
-define({id: "3f541ac3", inputs: ["display","L","comuniGeo","getColorForValue","scuoleBootstrap_css","scuole_css_breaks"], outputs: ["div","map","colors"], body: (display,L,comuniGeo,getColorForValue,scuoleBootstrap_css,scuole_css_breaks) => {
+define({id: "5515a8e2", inputs: ["display","L","comuniGeo","getColorForValue","scuoleBootstrap_css","scuole_css_breaks"], outputs: ["div","map","colors"], body: (display,L,comuniGeo,getColorForValue,scuoleBootstrap_css,scuole_css_breaks) => {
 const div = display(document.createElement("div"));
 div.style = "height: 1200px;";
 
@@ -801,12 +815,18 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 })
   .addTo(map);
 
-const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+const colors=[
+  '#7abdff',
+'#66abf5',
+'#519aeb',
+'#3d88e1',
+'#2677d7',
+'#0066cc'];
 
 L.geoJSON(comuniGeo.features, 
 {
     style: function(feature) {
-        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap_css.get(feature.properties.PRO_COM_T),scuole_css_breaks, "lightgrey")};
+        return {weight:0.5, opacity:1, fillOpacity:0.9, fillColor: getColorForValue(scuoleBootstrap_css.get(feature.properties.PRO_COM_T),scuole_css_breaks, "lightgrey")};
         }
 }).addTo(map);
 return {div,map,colors};
@@ -822,8 +842,6 @@ return {div,map,colors};
   </ol>
   <ol>
     <li class="observablehq-link observablehq-link-active"><a href="./analisi_2024_07">Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane (2024-07)</a></li>
-    <li class="observablehq-link"><a href="./data/venv/lib/python3.12/site-packages/numpy/random/LICENSE">NCSA Open Source License</a></li>
-    <li class="observablehq-link"><a href="./data/venv/lib/python3.12/site-packages/pyarrow/tests/data/orc/README">Untitled</a></li>
   </ol>
 </nav>
 <script>{Object.assign(document.createElement("a"),{href:""}).password&&location.replace(location.href);const e=document.querySelector("#observablehq-sidebar"),t=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?t.checked=r==="true":t.indeterminate=!0;for(const o of document.querySelectorAll("#observablehq-sidebar summary")){const s=o.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${o.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
@@ -903,39 +921,39 @@ return {div,map,colors};
 <div class="observablehq observablehq--block"><!--:7879bbb8:--></div>
 <h2 id="mappa-dei-comuni-che-usano-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-dei-comuni-che-usano-bootstrap">Mappa dei comuni che usano Bootstrap</a></h2>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:b9adacee:--></div>
-<div class="observablehq observablehq--block"><!--:1016175f:--></div>
+<div class="observablehq observablehq--block"><!--:6661fea4:--></div>
 <h2 id="mappa-delle-scuole-che-usano-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-delle-scuole-che-usano-bootstrap">Mappa delle scuole che usano Bootstrap</a></h2>
 <div class="observablehq observablehq--block"><!--:6f0f8a6d:--></div>
 <div class="observablehq observablehq--block"><!--:7c984c64:--></div>
 <div class="observablehq observablehq--block"><!--:c54cb794:--></div>
-<div class="observablehq observablehq--block"><!--:f066e5f1:--></div>
+<div class="observablehq observablehq--block"><!--:93cd7eff:--></div>
 <h2 id="mappa-dei-comuni-che-usano-bootstrap-italia" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-dei-comuni-che-usano-bootstrap-italia">Mappa dei comuni che usano Bootstrap Italia</a></h2>
 <div class="observablehq observablehq--block"><!--:487349d0:--></div>
 <div class="observablehq observablehq--block"><!--:20edf688:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:507c57e8:--></div>
-<div class="observablehq observablehq--block"><!--:1902490f:--></div>
+<div class="observablehq observablehq--block"><!--:5b0464cc:--></div>
 <h2 id="mappa-delle-scuole-che-usano-bootstrap-italia" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-delle-scuole-che-usano-bootstrap-italia">Mappa delle scuole che usano Bootstrap Italia</a></h2>
 <div class="observablehq observablehq--block"><!--:83797602:--></div>
 <div class="observablehq observablehq--block"><!--:a856689f:--></div>
 <div class="observablehq observablehq--block"><!--:00e4c18c:--></div>
-<div class="observablehq observablehq--block"><!--:9f99050c:--></div>
+<div class="observablehq observablehq--block"><!--:2dd97010:--></div>
 <h2 id="mappa-dei-comuni-che-usano-bootstrap-versione" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-dei-comuni-che-usano-bootstrap-versione">Mappa dei comuni che usano bootstrap versione <observablehq-loading></observablehq-loading><!--:5243a229:--></a></h2>
 <div class="observablehq observablehq--block"><!--:9ea2575b:--></div>
 <div class="observablehq observablehq--block"><!--:6973c676:--></div>
 <div class="observablehq observablehq--block"><!--:351d0f5c:--></div>
 <div class="observablehq observablehq--block"><!--:6bb47615:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:63352271:--></div>
-<div class="observablehq observablehq--block"><!--:ee342913:--></div>
+<div class="observablehq observablehq--block"><!--:e869c24e:--></div>
 <h2 id="mappa-delle-scuole-che-usano-bootstrap-versione" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-delle-scuole-che-usano-bootstrap-versione">Mappa delle scuole che usano bootstrap versione <observablehq-loading></observablehq-loading><!--:44b40b71:--></a></h2>
 <div class="observablehq observablehq--block"><!--:3e78a691:--></div>
 <div class="observablehq observablehq--block"><!--:cfd5b8da:--></div>
 <div class="observablehq observablehq--block"><!--:a9df5d24:--></div>
 <div class="observablehq observablehq--block"><!--:d0df763a:--></div>
 <div class="observablehq observablehq--block"><!--:a12d0bb8:--></div>
-<div class="observablehq observablehq--block"><!--:3f541ac3:--></div>
+<div class="observablehq observablehq--block"><!--:5515a8e2:--></div>
 </main>
 <footer id="observablehq-footer">
-<nav><a rel="prev" href="./"><span>CarbonEnti</span></a><a rel="next" href="./data/venv/lib/python3.12/site-packages/numpy/random/LICENSE"><span>NCSA Open Source License</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-09-16T18:58:49">Sep 16, 2024</a>.</div>
+<nav><a rel="prev" href="./"><span>CarbonEnti</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-09-16T19:11:41">Sep 16, 2024</a>.</div>
 </footer>
 </div>
