@@ -300,18 +300,11 @@ SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrap == 'true' THEN 1 ELSE 0 END)
 ```
 
 ```js
-const entiBootstrap = new Map(comuniEntiResBootstrap.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
+const comuniBootstrap = new Map(comuniEntiResBootstrap.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
 ```
 
 
 ## Mappa dei comuni che usano Bootstrap
-
-
-```js
-var filteredComuniGeo=JSON.parse(JSON.stringify(comuniGeo));
-
-filteredComuniGeo.features = filteredComuniGeo.features.filter(comune => entiBootstrap.get(comune.properties.PRO_COM_T));
-```
 
 
 ```js
@@ -323,7 +316,7 @@ color: {legend:true,type:"categorical",
       range:["blue","grey"]},
   marks: [
     Plot.geo(comuniGeo, 
-         { fill:  (d) => entiBootstrap.get(d.properties.PRO_COM_T)??false}, // Fill color depends on bootstrap value
+         { fill:  (d) => comuniBootstrap.get(d.properties.PRO_COM_T)??false}, // Fill color depends on bootstrap value
     {stroke: "black",
     }
     ) // Add county boundaries using the geo mark 
@@ -343,11 +336,10 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 })
   .addTo(map);
 
-
 L.geoJSON(comuniGeo.features, 
 {
     style: function(feature) {
-        switch (entiBootstrap.get(feature.properties.PRO_COM_T)) {
+        switch (comuniBootstrap.get(feature.properties.PRO_COM_T)) {
             case true: return {weight:1, opacity:1, fillOpacity:1, color: "blue"};
             default:   return {weight:1, opacity:1,fillOpacity:1, color: "grey"};
         }
@@ -356,48 +348,115 @@ L.geoJSON(comuniGeo.features,
 ```
 
 
+## Mappa delle scuole che usano Bootstrap
+
+```sql id=scuoleEntiResBootstrap display
+
+SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrap == 'true' THEN 1 ELSE 0 END)::integer AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L33' GROUP BY Codice_comune_ISTAT;
+```
+
 ```js
-const div = display(document.createElement("div"));
-div.style = "height: 400px;";
+const scuoleBootstrap = new Map(scuoleEntiResBootstrap.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
+```
 
-const map = L.map(div)
-  .setView([42.52379,12.21680], 5);
+```js
 
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-})
-  .addTo(map);
+/**
+ * Calculate Jenks Natural Breaks for a dataset
+ * @param {Array<number>} data - The array of data values
+ * @param {number} numClasses - The number of desired classes
+ * @returns {Array<number>} - The array of break values (boundaries for each class)
+ */
+function jenks(data, numClasses) {
+  console.log(data);
+    // Sort data in ascending order
+    data.sort((a, b) => a - b);
 
+    const dataLength = data.length;
 
-L.geoJSON(comuniGeo.features, 
-{
-    style: function(feature) {
-        switch (comuniBootstrap.get(feature.properties.PRO_COM_T)) {
-            case "true": return {weight:1, opacity:1, fillOpacity:0.7, color: "#ff0000"};
-            case "false":   return {weight:1, opacity:1,fillOpacity:0.7, color: "#0000ff"};
-            default:   return {weight:1, opacity:1,fillOpacity:0.7, color: "#111111"};
+    // Create matrices for variance and class limits
+    const lowerClassLimits = Array(dataLength + 1)
+        .fill(0)
+        .map(() => Array(numClasses + 1).fill(0));
+
+    const varianceCombinations = Array(dataLength + 1)
+        .fill(0)
+        .map(() => Array(numClasses + 1).fill(0));
+
+    // Initialize the first column
+    for (let i = 1; i <= numClasses; i++) {
+        lowerClassLimits[1][i] = 1;
+        varianceCombinations[1][i] = 0;
+        for (let j = 2; j <= dataLength; j++) {
+            varianceCombinations[j][i] = Infinity;
         }
     }
-}).addTo(map);
-```
 
-## Mappa dei comuni che usano Bootstrap Italia
+    let variance = 0.0;
 
-```js
-const comuniBootstrapItalia = new Map(lightHouseScore.toArray().map(({Codice_comune_ISTAT, bootstrapItalia}) => [Codice_comune_ISTAT, bootstrapItalia]))
-```
+    // Iterate over the data to calculate the class breaks
+    for (let l = 2; l <= dataLength; l++) {
+        let sum = 0.0;
+        let sumSquares = 0.0;
+        let w = 0;
+
+        for (let m = 1; m <= l; m++) {
+            const i3 = l - m + 1;
+            const value = data[i3 - 1];
+
+            w++;
+            sum += value;
+            sumSquares += value * value;
+            variance = sumSquares - (sum * sum) / w;
+
+            if (i3 !== 1) {
+                for (let j = 2; j <= numClasses; j++) {
+                    if (varianceCombinations[l][j] >= variance + varianceCombinations[i3 - 1][j - 1]) {
+                        lowerClassLimits[l][j] = i3;
+                        varianceCombinations[l][j] = variance + varianceCombinations[i3 - 1][j - 1];
+                    }
+                }
+            }
+        }
+        lowerClassLimits[l][1] = 1;
+        varianceCombinations[l][1] = variance;
+    }
+
+    const breaks = Array(numClasses + 1).fill(0);
+    breaks[numClasses] = data[dataLength - 1];
+    breaks[0] = data[0];
+
+    let k = dataLength;
+    for (let j = numClasses; j >= 2; j--) {
+        const id = lowerClassLimits[k][j] - 1;
+        if (id < 0) {
+            break; // Prevent out of bounds error
+        }
+        breaks[j - 1] = data[id];
+        k = lowerClassLimits[k][j] - 1;
+    }
+
+    return breaks;
+}
 
 
-```js
+// Specify number of desired classes (breaks)
+const numClasses = 6;
+
+// Compute the natural breaks
+const breaks = jenks(Array.from(scuoleBootstrap.values()), numClasses);
+
+
 resize((width) =>
 Plot.plot({
-  width,
   height:width,
-color: {legend:true,type:"categorical"},
+color: {legend:true},   
+      
   marks: [
     Plot.geo(comuniGeo, 
-         { fill: (d) => comuniBootstrapItalia.get(d.properties.PRO_COM_T) }, // Fill color depends on bootstrap value
-    {stroke: "black"}
+         { fill:  (d) => scuoleBootstrap.get(d.properties.PRO_COM_T)??0}, // Fill color depends on bootstrap value
+    {stroke: "black"
+    }
     ) // Add county boundaries using the geo mark 
   ]
 }))
@@ -405,24 +464,84 @@ color: {legend:true,type:"categorical"},
 
 ```js
 const div = display(document.createElement("div"));
-div.style = "height: 400px;";
+div.style = "height: 1200px;";
 
 const map = L.map(div)
-  .setView([42.52379,12.21680], 5);
+  .setView([42.52379,12.21680], 7);
 
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 })
   .addTo(map);
 
+const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+
+function getColorForValue(value, breaks) {
+    for (let i = 0; i < breaks.length - 1; i++) {
+        if (value >= breaks[i] && value <= breaks[i + 1]) {
+            return colors[i];
+        }
+    }
+    return colors[colors.length - 1]; // Default to the highest class color
+}
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        return {weight:1, opacity:1, fillOpacity:1, fillColor: getColorForValue(scuoleBootstrap.get(feature.properties.PRO_COM_T),breaks)};
+        }
+}).addTo(map);
+```
+
+
+## Mappa dei comuni che usano Bootstrap Italia
+
+
+```sql id=comuniEntiResBootstrapItalia 
+
+SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrapItalia == 'true' THEN 1 ELSE 0 END) > 0 AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430'  GROUP BY Codice_comune_ISTAT HAVING countbootstrap == true AND countbootstrap IS NOT NULL;
+```
+
+```js
+const comuniBootstrapItalia = new Map(comuniEntiResBootstrap.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
+```
+
+
+```js
+resize((width) =>
+Plot.plot({
+  height:width,
+color: {legend:true,type:"categorical",   
+      domain: [true,false],
+      range:["blue","grey"]},
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill:  (d) => comuniBootstrapItalia.get(d.properties.PRO_COM_T)??false}, // Fill color depends on bootstrap value
+    {stroke: "black",
+    }
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+```
+
+```js
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
 
 L.geoJSON(comuniGeo.features, 
 {
     style: function(feature) {
         switch (comuniBootstrapItalia.get(feature.properties.PRO_COM_T)) {
-            case true: return {weight:1, opacity:1, fillOpacity:0.7, color: "#ff0000"};
-            case false:   return {weight:1, opacity:1,fillOpacity:0.7, color: "#0000ff"};
-            default:   return {weight:1, opacity:1,fillOpacity:0.7, color: "#111111"};
+            case true: return {weight:1, opacity:1, fillOpacity:1, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:1, color: "grey"};
         }
     }
 }).addTo(map);
