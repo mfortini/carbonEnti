@@ -5,10 +5,13 @@ sql:
     entiRes: ./data/entiRes.parquet
 ---
 
-
 # Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane
 
-Lighthouse è stato fatto girare su tutti i siti delle Pubbliche Amministrazioni italiane presenti su IndicePA.
+```sql id=[{countEnti}]
+SELECT COUNT(Codice_IPA) AS countEnti FROM entiRes WHERE crawlDate= '2024-07-31'
+```
+
+Lighthouse è stato fatto girare su tutti i siti delle ${countEnti} Pubbliche Amministrazioni italiane presenti su IndicePA.
 
 ## In quanti enti è fallito Lighthouse?
 
@@ -23,6 +26,7 @@ SELECT COUNT(Codice_IPA) AS countEnti, CASE WHEN (lighthouseScore = 0 OR lightho
 ```js
 Plot.plot (
     {
+      width: width,
       marginLeft: 50, 
         x:{type:"band"},
           color: {legend: true, type:"ordinal",scheme: "Observable10"},
@@ -35,7 +39,26 @@ marks: [
 ```
 
 
+Alcuni motivi per il fallimento di Lighthouse:
+
+* L'URI è sbagliata
+* Il sito non è contattabile
+* Il sito ha dei problemi di certificato
+* La pagina ha degli errori
+
+
+### Test con cURL
+
+Per analizzare questi motivi, si è utilizzato cURL con un timeout di 10s e al massimo 2 tentativi per ciascun sito.
+
+```sql 
+SELECT CurlExitStatus,COUNT(Codice_IPA) AS countEnti FROM entiRes WHERE crawlDate= '2024-07-31' GROUP BY CurlExitStatus order by countEnti DESC
+```
+
+
 ## Quanti hanno risposto in HTTPS?
+
+Alcuni siti dichiarano ancora un'URL con il prefisso `http://` anziché `https://`, non permettendo una connessione sicura.
 
 
 ```sql
@@ -49,6 +72,7 @@ SELECT COUNT(Codice_IPA) AS numHTTPS, starts_with(url, 'https://') AS HTTPSresp 
 ```js
 Plot.plot (
     {
+      width: width,
       marginLeft: 50, 
         x:{type:"band"},
           color: {legend: true, type:"ordinal",scheme: "Observable10"},
@@ -88,6 +112,7 @@ Plot.plot({
 ```js
 Plot.plot({
  title: `Distribuzione dei tempi`,
+ width: width,
  marginLeft: 50, 
   y: {
     grid: true
@@ -104,6 +129,7 @@ Plot.plot({
 ```js
 Plot.plot({
  title: `Distribuzione dei tempi (meno di 9000ms)`,
+ width: width,
  marginLeft: 50, 
   y: {
     grid: true
@@ -139,6 +165,7 @@ Plot.plot({
 ```js
 Plot.plot({
  title: `Distribuzione della dimensione della pagina`,
+ width: width,
  marginLeft: 50, 
   y: {
     grid: true,
@@ -156,6 +183,7 @@ Plot.plot({
 ```js
 Plot.plot({
  title: `Distribuzione della dimensione della pagina (meno di 10e6 byte)`,
+ width: width,
  marginLeft: 50, 
   y: {
     grid: true,
@@ -253,126 +281,81 @@ marks: [
 
 
 
-## Uso di Bootstrap (utilizzando una semplice ricerca)
-
-```sql
-PIVOT (SELECT * FROM entiRes WHERE bootstrap != 'Error' AND lightHouseScore IS NOT NULL AND lightHouseScore > 0 AND crawlDate = '2024-07-31' ) ON bootstrap USING COUNT(Codice_IPA) GROUP BY crawlDate
-```
-
-### Uso di Bootstrap Italia (fra chi usa Bootstrap, utilizzando una semplice ricerca)
-
-```sql
-PIVOT (SELECT * FROM entiRes WHERE bootstrap = 'true'  AND lightHouseScore IS NOT NULL AND lightHouseScore > 0 AND crawlDate = '2024-07-31') ON bootstrapItalia USING COUNT(Codice_IPA) GROUP BY crawlDate
-```
-
-```js
-const filterDateBootstrap = view(Inputs.select(lightHouseScore.toArray().map(x=>x["crawlDate"]), {sort: "descending", reverse:true, unique: true, label:"Data di crawl"}));
-```
-<div class="grid grid-cols-2">
-<div class="card">
-
-### Bootstrap
-
-```js
-resize((width) =>
-Plot.plot({
-  title: `Distribuzione dei tempi con Bootstrap (data crawl ${filterDateBootstrap})`,
-  y: {grid: true},
-  width,
-  color: {legend: true,type:"categorical",scheme: "Observable10"},
-  marks: [
-    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.firstMeaningfulPaint < 9000) && (x.bootstrap == 'true') && (x.crawlDate == filterDateBootstrap)), Plot.binX({y: "count"}, {x: "firstMeaningfulPaint",fill:d3.schemeObservable10[0]})),
-    Plot.ruleY([0])
-  ]
-}))
-```
-
-```js
-resize((width) =>
-Plot.plot({
-  title: `Distribuzione dei tempi senza Bootstrap (data crawl ${filterDateBootstrap})`,
-  y: {grid: true},
-  width,
-  color: {legend: true,type:"categorical",scheme: "Observable10"},
-  marks: [
-    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.firstMeaningfulPaint < 9000) && (x.bootstrap == 'false') && (x.crawlDate == filterDateBootstrap)), Plot.binX({y: "count"}, {x: "firstMeaningfulPaint",fill:d3.schemeObservable10[1]})),
-    Plot.ruleY([0])
-  ]
-}))
-```
-
-
-</div>
-<div class="card">
-
-### Bootstrap Italia
-
-```js
-resize((width) =>
-Plot.plot({
-  title: `Distribuzione dei tempi con Bootstrap Italia (data crawl ${filterDateBootstrap})`,
-  y: {grid: true},
-  width,
-  color: {legend: true,type:"categorical",scheme: "Observable10"},
-  marks: [
-    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.firstMeaningfulPaint < 9000) && (x.bootstrapItalia == true) && (x.crawlDate == filterDateBootstrap)), Plot.binX({y: "count"}, {x: "firstMeaningfulPaint",fill:d3.schemeObservable10[0]})),
-    Plot.ruleY([0])
-  ]
-}))
-```
-
-```js
-resize((width) =>
-Plot.plot({
-  title: `Distribuzione dei tempi senza Bootstrap Italia (data crawl ${filterDateBootstrap})`,
-  y: {grid: true},
-  width,
-  color: {legend: true,type:"categorical",scheme: "Observable10"},
-  marks: [
-    Plot.rectY(lightHouseScore.toArray().filter((x)=>(x.firstMeaningfulPaint < 9000) && (x.bootstrapItalia == false) && (x.crawlDate == filterDateBootstrap)), Plot.binX({y: "count"}, {x: "firstMeaningfulPaint",fill:d3.schemeObservable10[1]})),
-    Plot.ruleY([0])
-  ]
-}))
-```
-
-</div>
-</div>
-
-
 ## Tutti i punteggi
 
-```js
-const filterDateTable = view(Inputs.select(lightHouseScore.toArray().map(x=>x["crawlDate"]), {sort: "descending", reverse:true, unique: true, label:"Data di crawl"}));
-```
 
 ```sql
-SELECT * FROM entiRes WHERE crawlDate = ${filterDateTable} ORDER BY lightHouseScore DESC
+SELECT * FROM entiRes WHERE crawlDate = '2024-07-31' ORDER BY lightHouseScore DESC
 ```
 
-```js
+```js 
 const comuniGeo=FileAttachment("data/comuniGeo.json").json();
 ```
 
-```js
-const comuniBootstrap = new Map(lightHouseScore.toArray().map(({Codice_comune_ISTAT, bootstrap}) => [Codice_comune_ISTAT, bootstrap]))
+
+
+```sql id=comuniEntiResBootstrap 
+
+SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrap == 'true' THEN 1 ELSE 0 END) > 0 AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430'  GROUP BY Codice_comune_ISTAT HAVING countbootstrap == true AND countbootstrap IS NOT NULL;
 ```
 
+```js
+const entiBootstrap = new Map(comuniEntiResBootstrap.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
+```
+
+
 ## Mappa dei comuni che usano Bootstrap
+
+
+```js
+var filteredComuniGeo=JSON.parse(JSON.stringify(comuniGeo));
+
+filteredComuniGeo.features = filteredComuniGeo.features.filter(comune => entiBootstrap.get(comune.properties.PRO_COM_T));
+```
+
 
 ```js
 resize((width) =>
 Plot.plot({
-  width,
   height:width,
-color: {legend:true,type:"categorical"},
+color: {legend:true,type:"categorical",   
+      domain: [true,false],
+      range:["blue","grey"]},
   marks: [
     Plot.geo(comuniGeo, 
-         { fill: (d) => comuniBootstrap.get(d.properties.PRO_COM_T) }, // Fill color depends on bootstrap value
-    {stroke: "black"}
+         { fill:  (d) => entiBootstrap.get(d.properties.PRO_COM_T)??false}, // Fill color depends on bootstrap value
+    {stroke: "black",
+    }
     ) // Add county boundaries using the geo mark 
   ]
 }))
 ```
+
+```js
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        switch (entiBootstrap.get(feature.properties.PRO_COM_T)) {
+            case true: return {weight:1, opacity:1, fillOpacity:1, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:1, color: "grey"};
+        }
+    }
+}).addTo(map);
+```
+
+
 ```js
 const div = display(document.createElement("div"));
 div.style = "height: 400px;";
@@ -443,9 +426,4 @@ L.geoJSON(comuniGeo.features,
         }
     }
 }).addTo(map);
-```
-
-```js
-
-console.log(true.toString());
 ```
