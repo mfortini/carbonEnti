@@ -296,7 +296,7 @@ const comuniGeo=FileAttachment("data/comuniGeo.json").json();
 
 ```sql id=comuniEntiResBootstrap 
 
-SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrap == 'true' THEN 1 ELSE 0 END) > 0 AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430'  GROUP BY Codice_comune_ISTAT HAVING countbootstrap == true AND countbootstrap IS NOT NULL;
+SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrap == 'true' THEN 1 ELSE 0 END) > 0 AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430' AND crawlDate = '2024-07-31' GROUP BY Codice_comune_ISTAT;
 ```
 
 ```js
@@ -313,7 +313,7 @@ Plot.plot({
   height:width,
 color: {legend:true,type:"categorical",   
       domain: [true,false],
-      range:["blue","grey"]},
+      range:["blue","lightgrey"]},
   marks: [
     Plot.geo(comuniGeo, 
          { fill:  (d) => comuniBootstrap.get(d.properties.PRO_COM_T)??false}, // Fill color depends on bootstrap value
@@ -340,8 +340,8 @@ L.geoJSON(comuniGeo.features,
 {
     style: function(feature) {
         switch (comuniBootstrap.get(feature.properties.PRO_COM_T)) {
-            case true: return {weight:1, opacity:1, fillOpacity:1, color: "blue"};
-            default:   return {weight:1, opacity:1,fillOpacity:1, color: "grey"};
+            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
         }
     }
 }).addTo(map);
@@ -352,7 +352,7 @@ L.geoJSON(comuniGeo.features,
 
 ```sql id=scuoleEntiResBootstrap display
 
-SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrap == 'true' THEN 1 ELSE 0 END)::integer AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L33' GROUP BY Codice_comune_ISTAT;
+SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrap == 'true' THEN 1 ELSE 0 END)::integer AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L33' AND crawlDate = '2024-07-31' GROUP BY Codice_comune_ISTAT;
 ```
 
 ```js
@@ -368,11 +368,18 @@ const scuoleBootstrap = new Map(scuoleEntiResBootstrap.toArray().map(({Codice_co
  * @returns {Array<number>} - The array of break values (boundaries for each class)
  */
 function jenks(data, numClasses) {
-  console.log(data);
-    // Sort data in ascending order
-    data.sort((a, b) => a - b);
+    // Remove duplicates from the data
+    const uniqueData = [...new Set(data)];
 
-    const dataLength = data.length;
+    // If there are fewer unique values than the number of classes, adjust the number of classes
+    if (uniqueData.length < numClasses) {
+        numClasses = uniqueData.length;
+    }
+
+    // Sort data in ascending order
+    uniqueData.sort((a, b) => a - b);
+
+    const dataLength = uniqueData.length;
 
     // Create matrices for variance and class limits
     const lowerClassLimits = Array(dataLength + 1)
@@ -402,7 +409,7 @@ function jenks(data, numClasses) {
 
         for (let m = 1; m <= l; m++) {
             const i3 = l - m + 1;
-            const value = data[i3 - 1];
+            const value = uniqueData[i3 - 1];
 
             w++;
             sum += value;
@@ -423,8 +430,8 @@ function jenks(data, numClasses) {
     }
 
     const breaks = Array(numClasses + 1).fill(0);
-    breaks[numClasses] = data[dataLength - 1];
-    breaks[0] = data[0];
+    breaks[numClasses] = uniqueData[dataLength - 1];
+    breaks[0] = uniqueData[0];
 
     let k = dataLength;
     for (let j = numClasses; j >= 2; j--) {
@@ -432,7 +439,7 @@ function jenks(data, numClasses) {
         if (id < 0) {
             break; // Prevent out of bounds error
         }
-        breaks[j - 1] = data[id];
+        breaks[j - 1] = uniqueData[id];
         k = lowerClassLimits[k][j] - 1;
     }
 
@@ -476,19 +483,19 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
 
-function getColorForValue(value, breaks) {
+function getColorForValue(value, breaks, default_color) {
     for (let i = 0; i < breaks.length - 1; i++) {
         if (value >= breaks[i] && value <= breaks[i + 1]) {
             return colors[i];
         }
     }
-    return colors[colors.length - 1]; // Default to the highest class color
+    return default_color; // Default to default class color
 }
 
 L.geoJSON(comuniGeo.features, 
 {
     style: function(feature) {
-        return {weight:1, opacity:1, fillOpacity:1, fillColor: getColorForValue(scuoleBootstrap.get(feature.properties.PRO_COM_T),breaks)};
+        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
         }
 }).addTo(map);
 ```
@@ -499,11 +506,11 @@ L.geoJSON(comuniGeo.features,
 
 ```sql id=comuniEntiResBootstrapItalia 
 
-SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrapItalia == 'true' THEN 1 ELSE 0 END) > 0 AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430'  GROUP BY Codice_comune_ISTAT HAVING countbootstrap == true AND countbootstrap IS NOT NULL;
+SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrapItalia == 'true' THEN 1 ELSE 0 END) > 0 AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430' AND crawlDate = '2024-07-31' GROUP BY Codice_comune_ISTAT;
 ```
 
 ```js
-const comuniBootstrapItalia = new Map(comuniEntiResBootstrap.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
+const comuniBootstrapItalia = new Map(comuniEntiResBootstrapItalia.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
 ```
 
 
@@ -513,7 +520,7 @@ Plot.plot({
   height:width,
 color: {legend:true,type:"categorical",   
       domain: [true,false],
-      range:["blue","grey"]},
+      range:["blue","lightgrey"]},
   marks: [
     Plot.geo(comuniGeo, 
          { fill:  (d) => comuniBootstrapItalia.get(d.properties.PRO_COM_T)??false}, // Fill color depends on bootstrap value
@@ -540,9 +547,196 @@ L.geoJSON(comuniGeo.features,
 {
     style: function(feature) {
         switch (comuniBootstrapItalia.get(feature.properties.PRO_COM_T)) {
-            case true: return {weight:1, opacity:1, fillOpacity:1, color: "blue"};
-            default:   return {weight:1, opacity:1,fillOpacity:1, color: "grey"};
+            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
         }
     }
+}).addTo(map);
+```
+
+## Mappa delle scuole che usano Bootstrap Italia
+
+```sql id=scuoleEntiResBootstrap_Italia display
+
+SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrapItalia == 'true' THEN 1 ELSE 0 END)::integer AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L33' AND crawlDate = '2024-07-31' GROUP BY Codice_comune_ISTAT;
+```
+
+```js
+const scuoleBootstrap_Italia = new Map(scuoleEntiResBootstrap_Italia.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
+```
+
+```js
+
+
+// Compute the natural breaks
+const breaks_scuole_BI = jenks(Array.from(scuoleBootstrap_Italia.values()), numClasses);
+
+
+resize((width) =>
+Plot.plot({
+  height:width,
+color: {legend:true},   
+      
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill:  (d) => scuoleBootstrap_Italia.get(d.properties.PRO_COM_T)??0}, // Fill color depends on bootstrap value
+    {stroke: "black"
+    }
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+```
+
+```js
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap_Italia.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
+        }
+}).addTo(map);
+```
+
+
+
+
+## Mappa dei comuni che usano bootstrap versione ${comuni_filterbootstrap_css}
+
+```sql id=comuni_bootstrap2_css
+SELECT Codice_comune_ISTAT, bootstrap2_css FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430' AND crawlDate = '2024-07-31' AND bootstrap2_css IS NOT NULL AND bootstrap2_css != '' ;
+```
+
+```js
+const comuni_filterbootstrap_css = view(Inputs.select(comuni_bootstrap2_css.toArray().map(x=>x["bootstrap2_css"]), {sort: "ascending", reverse:false, unique: true, label:"Bootstrap version"}));
+```
+
+```sql id=comuni_bootstrap2_css_filtered
+SELECT Codice_comune_ISTAT, bootstrap2_css FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430' AND crawlDate = '2024-07-31' AND bootstrap2_css = ${comuni_filterbootstrap_css} ;
+```
+
+
+```js
+const comuniBootstrap_css = new Map(comuni_bootstrap2_css_filtered.toArray().map(({Codice_comune_ISTAT}) => [Codice_comune_ISTAT, true]))
+```
+
+```js
+resize((width) =>
+Plot.plot({
+  height:width,
+color: {legend:true,type:"categorical",   
+      domain: [true,false],
+      range:["blue","lightgrey"]},
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill:  (d) => comuniBootstrap_css.get(d.properties.PRO_COM_T)??false}, // Fill color depends on bootstrap value
+    {stroke: "black",
+    }
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+```
+
+```js
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        switch (comuniBootstrap_css.get(feature.properties.PRO_COM_T)) {
+            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
+        }
+    }
+}).addTo(map);
+```
+
+
+## Mappa delle scuole che usano bootstrap versione ${scuole_filterbootstrap_css}
+
+```sql id=scuole_bootstrap2_css display
+SELECT Codice_comune_ISTAT, bootstrap2_css, COUNT(Codice_comune_ISTAT) AS countBootstrap FROM entiRes WHERE Codice_Categoria =='L33' AND crawlDate = '2024-07-31' AND bootstrap2_css IS NOT NULL AND bootstrap2_css != '' GROUP BY Codice_comune_ISTAT, bootstrap2_css HAVING countBootstrap > 0;
+```
+
+```js
+const scuole_filterbootstrap_css = view(Inputs.select(scuole_bootstrap2_css.toArray().map(x=>x["bootstrap2_css"]), {sort: "ascending", reverse:false, unique: true, label:"Bootstrap version"}));
+```
+
+```sql id=scuole_bootstrap2_css_filtered 
+SELECT Codice_comune_ISTAT, bootstrap2_css, COUNT(Codice_comune_ISTAT) AS countBootstrap FROM entiRes WHERE Codice_Categoria =='L33' AND crawlDate = '2024-07-31' AND bootstrap2_css == ${scuole_filterbootstrap_css} GROUP BY Codice_comune_ISTAT, bootstrap2_css; ;
+```
+
+
+```js
+const scuoleBootstrap_css = new Map(scuole_bootstrap2_css_filtered.toArray().map(({Codice_comune_ISTAT,countBootstrap}) => [Codice_comune_ISTAT, countBootstrap]))
+```
+
+```js
+
+
+
+// Specify number of desired classes (breaks)
+const scuole_css_numClasses = 6;
+
+// Compute the natural breaks
+const scuole_css_breaks = jenks(Array.from(scuoleBootstrap_css.values()), scuole_css_numClasses);
+
+console.log("Breaks",scuole_css_breaks);
+
+resize((width) =>
+Plot.plot({
+  height:width,
+color: {legend:true},   
+      
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill:  (d) => scuoleBootstrap_css.get(d.properties.PRO_COM_T)??0}, // Fill color depends on bootstrap value
+    {stroke: "black"
+    }
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+```
+
+```js
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap_css.get(feature.properties.PRO_COM_T),scuole_css_breaks, "lightgrey")};
+        }
 }).addTo(map);
 ```
