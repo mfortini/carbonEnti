@@ -340,8 +340,8 @@ L.geoJSON(comuniGeo.features,
 {
     style: function(feature) {
         switch (comuniBootstrap.get(feature.properties.PRO_COM_T)) {
-            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
-            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
+            case true: return {weight:1, opacity:1, fillOpacity:0.9, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.9, color: "lightgrey"};
         }
     }
 }).addTo(map);
@@ -495,7 +495,7 @@ function getColorForValue(value, breaks, default_color) {
 L.geoJSON(comuniGeo.features, 
 {
     style: function(feature) {
-        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
+        return {weight:0.5, opacity:1, fillOpacity:0.9, fillColor: getColorForValue(scuoleBootstrap.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
         }
 }).addTo(map);
 ```
@@ -547,8 +547,8 @@ L.geoJSON(comuniGeo.features,
 {
     style: function(feature) {
         switch (comuniBootstrapItalia.get(feature.properties.PRO_COM_T)) {
-            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
-            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
+            case true: return {weight:1, opacity:1, fillOpacity:0.9, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.9, color: "lightgrey"};
         }
     }
 }).addTo(map);
@@ -605,7 +605,7 @@ const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
 L.geoJSON(comuniGeo.features, 
 {
     style: function(feature) {
-        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap_Italia.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
+        return {weight:0.5, opacity:1, fillOpacity:0.9, fillColor: getColorForValue(scuoleBootstrap_Italia.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
         }
 }).addTo(map);
 ```
@@ -665,8 +665,8 @@ L.geoJSON(comuniGeo.features,
 {
     style: function(feature) {
         switch (comuniBootstrap_css.get(feature.properties.PRO_COM_T)) {
-            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
-            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
+            case true: return {weight:1, opacity:1, fillOpacity:0.9, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.9, color: "lightgrey"};
         }
     }
 }).addTo(map);
@@ -736,7 +736,7 @@ const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
 L.geoJSON(comuniGeo.features, 
 {
     style: function(feature) {
-        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap_css.get(feature.properties.PRO_COM_T),scuole_css_breaks, "lightgrey")};
+        return {weight:0.5, opacity:1, fillOpacity:0.9, fillColor: getColorForValue(scuoleBootstrap_css.get(feature.properties.PRO_COM_T),scuole_css_breaks, "lightgrey")};
         }
 }).addTo(map);
 ```
