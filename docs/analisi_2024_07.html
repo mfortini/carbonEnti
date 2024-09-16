@@ -6,15 +6,18 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
 <link rel="preload" as="style" href="./_observablehq/theme-cotton.css">
 <link rel="preload" as="style" href="./_observablehq/stdlib/inputs.css">
+<link rel="preload" as="style" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
 <link rel="stylesheet" type="text/css" href="./_observablehq/theme-cotton.css">
 <link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.css">
+<link rel="stylesheet" type="text/css" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="modulepreload" href="./_observablehq/client.js">
 <link rel="modulepreload" href="./_observablehq/runtime.js">
 <link rel="modulepreload" href="./_observablehq/stdlib.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/duckdb.js">
 <link rel="modulepreload" href="./_observablehq/stdlib/inputs.js">
-<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.15/_esm.js">
+<link rel="modulepreload" href="./_npm/leaflet@1.9.4/_esm.js">
+<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.16/_esm.js">
 <link rel="modulepreload" href="./_npm/@duckdb/duckdb-wasm@1.28.0/_esm.js">
 <link rel="modulepreload" href="./_npm/htl@0.3.1/_esm.js">
 <link rel="modulepreload" href="./_npm/isoformat@0.2.1/_esm.js">
@@ -52,7 +55,7 @@
 <link rel="modulepreload" href="./_npm/d3-transition@3.0.1/_esm.js">
 <link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/_esm.js">
 <link rel="modulepreload" href="./_npm/binary-search-bounds@2.0.5/_esm.js">
-<link rel="modulepreload" href="./_npm/tslib@2.6.3/_esm.js">
+<link rel="modulepreload" href="./_npm/tslib@2.7.0/_esm.js">
 <link rel="modulepreload" href="./_npm/flatbuffers@24.3.25/_esm.js">
 <link rel="modulepreload" href="./_npm/internmap@2.0.3/_esm.js">
 <link rel="modulepreload" href="./_npm/delaunator@5.0.1/_esm.js">
@@ -63,8 +66,20 @@ import {define} from "./_observablehq/client.js";
 import {registerFile, FileAttachment} from "./_observablehq/stdlib.js";
 import {registerTable} from "./_observablehq/stdlib/duckdb.js";
 
-registerFile("./data/entiRes.parquet", {"name":"./data/entiRes.parquet","path":"./_file/data/entiRes.9d117cd2.parquet","lastModified":1722959865420});
+registerFile("./data/comuniGeo.json", {"name":"./data/comuniGeo.json","mimeType":"application/json","path":"./_file/data/comuniGeo.ff46b07a.json","lastModified":1726498571965});
+registerFile("./data/entiRes.parquet", {"name":"./data/entiRes.parquet","path":"./_file/data/entiRes.cc10f4d7.parquet","lastModified":1726079322671});
 registerTable("entiRes", FileAttachment("./data/entiRes.parquet"));
+
+define({id: "bf956b09", inputs: ["sql"], outputs: ["countEnti"], body: async (sql) => {
+const [{countEnti}] = await sql`SELECT COUNT(Codice_IPA) AS countEnti FROM entiRes WHERE crawlDate= '2024-07-31'`;
+return {countEnti};
+}});
+
+define({id: "46134a8a", mode: "inline", inputs: ["countEnti","display"], body: async (countEnti,display) => {
+display(await(
+countEnti
+))
+}});
 
 define({id: "4660608b", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
 display(Inputs.table(await sql`PIVOT (SELECT CAST (crawlDate AS STRING) as crawlDate, Codice_IPA, CASE WHEN (lighthouseScore = 0 OR lighthouseScore IS NULL) THEN 'KO' ELSE 'OK' END AS LightHouseRun FROM entiRes WHERE crawlDate= '2024-07-31') ON LightHouseRun USING COUNT(Codice_IPA) GROUP BY crawlDate`));
@@ -90,6 +105,10 @@ marks: [
 }
 )
 ))
+}});
+
+define({id: "73056b64", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
+display(Inputs.table(await sql`SELECT CurlExitStatus,COUNT(Codice_IPA) AS countEnti FROM entiRes WHERE crawlDate= '2024-07-31' GROUP BY CurlExitStatus order by countEnti DESC`));
 }});
 
 define({id: "cd7c0bcc", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
@@ -325,6 +344,474 @@ marks: [
 ))
 }});
 
+define({id: "a7cfda26", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
+display(Inputs.table(await sql`SELECT * FROM entiRes WHERE crawlDate = '2024-07-31' ORDER BY lightHouseScore DESC`));
+}});
+
+define({id: "aa742cb5", inputs: ["FileAttachment"], outputs: ["comuniGeo"], body: (FileAttachment) => {
+const comuniGeo=FileAttachment("./data/comuniGeo.json").json();
+return {comuniGeo};
+}});
+
+define({id: "da2bedf5", inputs: ["sql"], outputs: ["comuniEntiResBootstrap"], body: async (sql) => {
+const comuniEntiResBootstrap = await sql`SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrap == 'true' THEN 1 ELSE 0 END) > 0 AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430' AND crawlDate = '2024-07-31' GROUP BY Codice_comune_ISTAT;`;
+return {comuniEntiResBootstrap};
+}});
+
+define({id: "7879bbb8", inputs: ["comuniEntiResBootstrap"], outputs: ["comuniBootstrap"], body: (comuniEntiResBootstrap) => {
+const comuniBootstrap = new Map(comuniEntiResBootstrap.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
+return {comuniBootstrap};
+}});
+
+define({id: "b9adacee", inputs: ["resize","Plot","comuniGeo","comuniBootstrap","display"], body: async (resize,Plot,comuniGeo,comuniBootstrap,display) => {
+display(await(
+resize((width) =>
+Plot.plot({
+  height:width,
+color: {legend:true,type:"categorical",   
+      domain: [true,false],
+      range:["blue","lightgrey"]},
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill:  (d) => comuniBootstrap.get(d.properties.PRO_COM_T)??false}, // Fill color depends on bootstrap value
+    {stroke: "black",
+    }
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+))
+}});
+
+define({id: "1016175f", inputs: ["display","L","comuniGeo","comuniBootstrap"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrap) => {
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        switch (comuniBootstrap.get(feature.properties.PRO_COM_T)) {
+            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
+        }
+    }
+}).addTo(map);
+return {div,map};
+}});
+
+define({id: "6f0f8a6d", inputs: ["display","Inputs","sql"], outputs: ["scuoleEntiResBootstrap"], body: async (display,Inputs,sql) => {
+const scuoleEntiResBootstrap = ((_) => (display(Inputs.table(_)), _))(await sql`SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrap == 'true' THEN 1 ELSE 0 END)::integer AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L33' AND crawlDate = '2024-07-31' GROUP BY Codice_comune_ISTAT;`);
+return {scuoleEntiResBootstrap};
+}});
+
+define({id: "7c984c64", inputs: ["scuoleEntiResBootstrap"], outputs: ["scuoleBootstrap"], body: (scuoleEntiResBootstrap) => {
+const scuoleBootstrap = new Map(scuoleEntiResBootstrap.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
+return {scuoleBootstrap};
+}});
+
+define({id: "c54cb794", inputs: ["scuoleBootstrap","resize","Plot","comuniGeo"], outputs: ["jenks","numClasses","breaks"], body: (scuoleBootstrap,resize,Plot,comuniGeo) => {
+/**
+ * Calculate Jenks Natural Breaks for a dataset
+ * @param {Array<number>} data - The array of data values
+ * @param {number} numClasses - The number of desired classes
+ * @returns {Array<number>} - The array of break values (boundaries for each class)
+ */
+function jenks(data, numClasses) {
+    // Remove duplicates from the data
+    const uniqueData = [...new Set(data)];
+
+    // If there are fewer unique values than the number of classes, adjust the number of classes
+    if (uniqueData.length < numClasses) {
+        numClasses = uniqueData.length;
+    }
+
+    // Sort data in ascending order
+    uniqueData.sort((a, b) => a - b);
+
+    const dataLength = uniqueData.length;
+
+    // Create matrices for variance and class limits
+    const lowerClassLimits = Array(dataLength + 1)
+        .fill(0)
+        .map(() => Array(numClasses + 1).fill(0));
+
+    const varianceCombinations = Array(dataLength + 1)
+        .fill(0)
+        .map(() => Array(numClasses + 1).fill(0));
+
+    // Initialize the first column
+    for (let i = 1; i <= numClasses; i++) {
+        lowerClassLimits[1][i] = 1;
+        varianceCombinations[1][i] = 0;
+        for (let j = 2; j <= dataLength; j++) {
+            varianceCombinations[j][i] = Infinity;
+        }
+    }
+
+    let variance = 0.0;
+
+    // Iterate over the data to calculate the class breaks
+    for (let l = 2; l <= dataLength; l++) {
+        let sum = 0.0;
+        let sumSquares = 0.0;
+        let w = 0;
+
+        for (let m = 1; m <= l; m++) {
+            const i3 = l - m + 1;
+            const value = uniqueData[i3 - 1];
+
+            w++;
+            sum += value;
+            sumSquares += value * value;
+            variance = sumSquares - (sum * sum) / w;
+
+            if (i3 !== 1) {
+                for (let j = 2; j <= numClasses; j++) {
+                    if (varianceCombinations[l][j] >= variance + varianceCombinations[i3 - 1][j - 1]) {
+                        lowerClassLimits[l][j] = i3;
+                        varianceCombinations[l][j] = variance + varianceCombinations[i3 - 1][j - 1];
+                    }
+                }
+            }
+        }
+        lowerClassLimits[l][1] = 1;
+        varianceCombinations[l][1] = variance;
+    }
+
+    const breaks = Array(numClasses + 1).fill(0);
+    breaks[numClasses] = uniqueData[dataLength - 1];
+    breaks[0] = uniqueData[0];
+
+    let k = dataLength;
+    for (let j = numClasses; j >= 2; j--) {
+        const id = lowerClassLimits[k][j] - 1;
+        if (id < 0) {
+            break; // Prevent out of bounds error
+        }
+        breaks[j - 1] = uniqueData[id];
+        k = lowerClassLimits[k][j] - 1;
+    }
+
+    return breaks;
+}
+
+
+// Specify number of desired classes (breaks)
+const numClasses = 6;
+
+// Compute the natural breaks
+const breaks = jenks(Array.from(scuoleBootstrap.values()), numClasses);
+
+
+resize((width) =>
+Plot.plot({
+  height:width,
+color: {legend:true},   
+      
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill:  (d) => scuoleBootstrap.get(d.properties.PRO_COM_T)??0}, // Fill color depends on bootstrap value
+    {stroke: "black"
+    }
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+return {jenks,numClasses,breaks};
+}});
+
+define({id: "f066e5f1", inputs: ["display","L","comuniGeo","scuoleBootstrap","breaks"], outputs: ["div","map","colors","getColorForValue"], body: (display,L,comuniGeo,scuoleBootstrap,breaks) => {
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+
+function getColorForValue(value, breaks, default_color) {
+    for (let i = 0; i < breaks.length - 1; i++) {
+        if (value >= breaks[i] && value <= breaks[i + 1]) {
+            return colors[i];
+        }
+    }
+    return default_color; // Default to default class color
+}
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
+        }
+}).addTo(map);
+return {div,map,colors,getColorForValue};
+}});
+
+define({id: "487349d0", inputs: ["sql"], outputs: ["comuniEntiResBootstrapItalia"], body: async (sql) => {
+const comuniEntiResBootstrapItalia = await sql`SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrapItalia == 'true' THEN 1 ELSE 0 END) > 0 AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430' AND crawlDate = '2024-07-31' GROUP BY Codice_comune_ISTAT;`;
+return {comuniEntiResBootstrapItalia};
+}});
+
+define({id: "20edf688", inputs: ["comuniEntiResBootstrapItalia"], outputs: ["comuniBootstrapItalia"], body: (comuniEntiResBootstrapItalia) => {
+const comuniBootstrapItalia = new Map(comuniEntiResBootstrapItalia.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
+return {comuniBootstrapItalia};
+}});
+
+define({id: "507c57e8", inputs: ["resize","Plot","comuniGeo","comuniBootstrapItalia","display"], body: async (resize,Plot,comuniGeo,comuniBootstrapItalia,display) => {
+display(await(
+resize((width) =>
+Plot.plot({
+  height:width,
+color: {legend:true,type:"categorical",   
+      domain: [true,false],
+      range:["blue","lightgrey"]},
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill:  (d) => comuniBootstrapItalia.get(d.properties.PRO_COM_T)??false}, // Fill color depends on bootstrap value
+    {stroke: "black",
+    }
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+))
+}});
+
+define({id: "1902490f", inputs: ["display","L","comuniGeo","comuniBootstrapItalia"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrapItalia) => {
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        switch (comuniBootstrapItalia.get(feature.properties.PRO_COM_T)) {
+            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
+        }
+    }
+}).addTo(map);
+return {div,map};
+}});
+
+define({id: "83797602", inputs: ["display","Inputs","sql"], outputs: ["scuoleEntiResBootstrap_Italia"], body: async (display,Inputs,sql) => {
+const scuoleEntiResBootstrap_Italia = ((_) => (display(Inputs.table(_)), _))(await sql`SELECT Codice_comune_ISTAT, sum(CASE WHEN bootstrapItalia == 'true' THEN 1 ELSE 0 END)::integer AS countbootstrap FROM entiRes WHERE Codice_Categoria =='L33' AND crawlDate = '2024-07-31' GROUP BY Codice_comune_ISTAT;`);
+return {scuoleEntiResBootstrap_Italia};
+}});
+
+define({id: "a856689f", inputs: ["scuoleEntiResBootstrap_Italia"], outputs: ["scuoleBootstrap_Italia"], body: (scuoleEntiResBootstrap_Italia) => {
+const scuoleBootstrap_Italia = new Map(scuoleEntiResBootstrap_Italia.toArray().map(({Codice_comune_ISTAT, countbootstrap}) => [Codice_comune_ISTAT, countbootstrap]))
+return {scuoleBootstrap_Italia};
+}});
+
+define({id: "00e4c18c", inputs: ["jenks","scuoleBootstrap_Italia","numClasses","resize","Plot","comuniGeo"], outputs: ["breaks_scuole_BI"], body: (jenks,scuoleBootstrap_Italia,numClasses,resize,Plot,comuniGeo) => {
+
+// Compute the natural breaks
+const breaks_scuole_BI = jenks(Array.from(scuoleBootstrap_Italia.values()), numClasses);
+
+
+resize((width) =>
+Plot.plot({
+  height:width,
+color: {legend:true},   
+      
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill:  (d) => scuoleBootstrap_Italia.get(d.properties.PRO_COM_T)??0}, // Fill color depends on bootstrap value
+    {stroke: "black"
+    }
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+return {breaks_scuole_BI};
+}});
+
+define({id: "9f99050c", inputs: ["display","L","comuniGeo","getColorForValue","scuoleBootstrap_Italia","breaks"], outputs: ["div","map","colors"], body: (display,L,comuniGeo,getColorForValue,scuoleBootstrap_Italia,breaks) => {
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap_Italia.get(feature.properties.PRO_COM_T),breaks, "lightgrey")};
+        }
+}).addTo(map);
+return {div,map,colors};
+}});
+
+define({id: "5243a229", mode: "inline", inputs: ["comuni_filterbootstrap_css","display"], body: async (comuni_filterbootstrap_css,display) => {
+display(await(
+comuni_filterbootstrap_css
+))
+}});
+
+define({id: "9ea2575b", inputs: ["sql"], outputs: ["comuni_bootstrap2_css"], body: async (sql) => {
+const comuni_bootstrap2_css = await sql`SELECT Codice_comune_ISTAT, bootstrap2_css FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430' AND crawlDate = '2024-07-31' AND bootstrap2_css IS NOT NULL AND bootstrap2_css != '' ;`;
+return {comuni_bootstrap2_css};
+}});
+
+define({id: "6973c676", inputs: ["view","Inputs","comuni_bootstrap2_css"], outputs: ["comuni_filterbootstrap_css"], body: (view,Inputs,comuni_bootstrap2_css) => {
+const comuni_filterbootstrap_css = view(Inputs.select(comuni_bootstrap2_css.toArray().map(x=>x["bootstrap2_css"]), {sort: "ascending", reverse:false, unique: true, label:"Bootstrap version"}));
+return {comuni_filterbootstrap_css};
+}});
+
+define({id: "351d0f5c", inputs: ["sql","comuni_filterbootstrap_css"], outputs: ["comuni_bootstrap2_css_filtered"], body: async (sql,comuni_filterbootstrap_css) => {
+const comuni_bootstrap2_css_filtered = await sql`SELECT Codice_comune_ISTAT, bootstrap2_css FROM entiRes WHERE Codice_Categoria =='L6' AND Codice_natura = '2430' AND crawlDate = '2024-07-31' AND bootstrap2_css = ${comuni_filterbootstrap_css} ;`;
+return {comuni_bootstrap2_css_filtered};
+}});
+
+define({id: "6bb47615", inputs: ["comuni_bootstrap2_css_filtered"], outputs: ["comuniBootstrap_css"], body: (comuni_bootstrap2_css_filtered) => {
+const comuniBootstrap_css = new Map(comuni_bootstrap2_css_filtered.toArray().map(({Codice_comune_ISTAT}) => [Codice_comune_ISTAT, true]))
+return {comuniBootstrap_css};
+}});
+
+define({id: "63352271", inputs: ["resize","Plot","comuniGeo","comuniBootstrap_css","display"], body: async (resize,Plot,comuniGeo,comuniBootstrap_css,display) => {
+display(await(
+resize((width) =>
+Plot.plot({
+  height:width,
+color: {legend:true,type:"categorical",   
+      domain: [true,false],
+      range:["blue","lightgrey"]},
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill:  (d) => comuniBootstrap_css.get(d.properties.PRO_COM_T)??false}, // Fill color depends on bootstrap value
+    {stroke: "black",
+    }
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+))
+}});
+
+define({id: "ee342913", inputs: ["display","L","comuniGeo","comuniBootstrap_css"], outputs: ["div","map"], body: (display,L,comuniGeo,comuniBootstrap_css) => {
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        switch (comuniBootstrap_css.get(feature.properties.PRO_COM_T)) {
+            case true: return {weight:1, opacity:1, fillOpacity:0.6, color: "blue"};
+            default:   return {weight:1, opacity:1,fillOpacity:0.6, color: "lightgrey"};
+        }
+    }
+}).addTo(map);
+return {div,map};
+}});
+
+define({id: "44b40b71", mode: "inline", inputs: ["scuole_filterbootstrap_css","display"], body: async (scuole_filterbootstrap_css,display) => {
+display(await(
+scuole_filterbootstrap_css
+))
+}});
+
+define({id: "3e78a691", inputs: ["display","Inputs","sql"], outputs: ["scuole_bootstrap2_css"], body: async (display,Inputs,sql) => {
+const scuole_bootstrap2_css = ((_) => (display(Inputs.table(_)), _))(await sql`SELECT Codice_comune_ISTAT, bootstrap2_css, COUNT(Codice_comune_ISTAT) AS countBootstrap FROM entiRes WHERE Codice_Categoria =='L33' AND crawlDate = '2024-07-31' AND bootstrap2_css IS NOT NULL AND bootstrap2_css != '' GROUP BY Codice_comune_ISTAT, bootstrap2_css HAVING countBootstrap > 0;`);
+return {scuole_bootstrap2_css};
+}});
+
+define({id: "cfd5b8da", inputs: ["view","Inputs","scuole_bootstrap2_css"], outputs: ["scuole_filterbootstrap_css"], body: (view,Inputs,scuole_bootstrap2_css) => {
+const scuole_filterbootstrap_css = view(Inputs.select(scuole_bootstrap2_css.toArray().map(x=>x["bootstrap2_css"]), {sort: "ascending", reverse:false, unique: true, label:"Bootstrap version"}));
+return {scuole_filterbootstrap_css};
+}});
+
+define({id: "a9df5d24", inputs: ["sql","scuole_filterbootstrap_css"], outputs: ["scuole_bootstrap2_css_filtered"], body: async (sql,scuole_filterbootstrap_css) => {
+const scuole_bootstrap2_css_filtered = await sql`SELECT Codice_comune_ISTAT, bootstrap2_css, COUNT(Codice_comune_ISTAT) AS countBootstrap FROM entiRes WHERE Codice_Categoria =='L33' AND crawlDate = '2024-07-31' AND bootstrap2_css == ${scuole_filterbootstrap_css} GROUP BY Codice_comune_ISTAT, bootstrap2_css; ;`;
+return {scuole_bootstrap2_css_filtered};
+}});
+
+define({id: "d0df763a", inputs: ["scuole_bootstrap2_css_filtered"], outputs: ["scuoleBootstrap_css"], body: (scuole_bootstrap2_css_filtered) => {
+const scuoleBootstrap_css = new Map(scuole_bootstrap2_css_filtered.toArray().map(({Codice_comune_ISTAT,countBootstrap}) => [Codice_comune_ISTAT, countBootstrap]))
+return {scuoleBootstrap_css};
+}});
+
+define({id: "a12d0bb8", inputs: ["jenks","scuoleBootstrap_css","resize","Plot","comuniGeo"], outputs: ["scuole_css_numClasses","scuole_css_breaks"], body: (jenks,scuoleBootstrap_css,resize,Plot,comuniGeo) => {
+
+
+// Specify number of desired classes (breaks)
+const scuole_css_numClasses = 6;
+
+// Compute the natural breaks
+const scuole_css_breaks = jenks(Array.from(scuoleBootstrap_css.values()), scuole_css_numClasses);
+
+console.log("Breaks",scuole_css_breaks);
+
+resize((width) =>
+Plot.plot({
+  height:width,
+color: {legend:true},   
+      
+  marks: [
+    Plot.geo(comuniGeo, 
+         { fill:  (d) => scuoleBootstrap_css.get(d.properties.PRO_COM_T)??0}, // Fill color depends on bootstrap value
+    {stroke: "black"
+    }
+    ) // Add county boundaries using the geo mark 
+  ]
+}))
+return {scuole_css_numClasses,scuole_css_breaks};
+}});
+
+define({id: "3f541ac3", inputs: ["display","L","comuniGeo","getColorForValue","scuoleBootstrap_css","scuole_css_breaks"], outputs: ["div","map","colors"], body: (display,L,comuniGeo,getColorForValue,scuoleBootstrap_css,scuole_css_breaks) => {
+const div = display(document.createElement("div"));
+div.style = "height: 1200px;";
+
+const map = L.map(div)
+  .setView([42.52379,12.21680], 7);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+})
+  .addTo(map);
+
+const colors=['#eff3ff','#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'];
+
+L.geoJSON(comuniGeo.features, 
+{
+    style: function(feature) {
+        return {weight:0.5, opacity:1, fillOpacity:0.6, fillColor: getColorForValue(scuoleBootstrap_css.get(feature.properties.PRO_COM_T),scuole_css_breaks, "lightgrey")};
+        }
+}).addTo(map);
+return {div,map,colors};
+}});
+
 </script>
 <input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
 <label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
@@ -335,6 +822,8 @@ marks: [
   </ol>
   <ol>
     <li class="observablehq-link observablehq-link-active"><a href="./analisi_2024_07">Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane (2024-07)</a></li>
+    <li class="observablehq-link"><a href="./data/venv/lib/python3.12/site-packages/numpy/random/LICENSE">NCSA Open Source License</a></li>
+    <li class="observablehq-link"><a href="./data/venv/lib/python3.12/site-packages/pyarrow/tests/data/orc/README">Untitled</a></li>
   </ol>
 </nav>
 <script>{Object.assign(document.createElement("a"),{href:""}).password&&location.replace(location.href);const e=document.querySelector("#observablehq-sidebar"),t=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?t.checked=r==="true":t.indeterminate=!0;for(const o of document.querySelectorAll("#observablehq-sidebar summary")){const s=o.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${o.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
@@ -348,18 +837,37 @@ marks: [
 <li class="observablehq-secondary-link"><a href="#tempo-necessario-per-avere-un-contenuto-%22significativo%22">Tempo necessario per avere un contenuto &quot;significativo&quot;</a></li>
 <li class="observablehq-secondary-link"><a href="#dimensione-della-pagina-(byte)">Dimensione della pagina (byte)</a></li>
 <li class="observablehq-secondary-link"><a href="#versioni-di-bootstrap">Versioni di Bootstrap</a></li>
+<li class="observablehq-secondary-link"><a href="#tutti-i-punteggi">Tutti i punteggi</a></li>
+<li class="observablehq-secondary-link"><a href="#mappa-dei-comuni-che-usano-bootstrap">Mappa dei comuni che usano Bootstrap</a></li>
+<li class="observablehq-secondary-link"><a href="#mappa-delle-scuole-che-usano-bootstrap">Mappa delle scuole che usano Bootstrap</a></li>
+<li class="observablehq-secondary-link"><a href="#mappa-dei-comuni-che-usano-bootstrap-italia">Mappa dei comuni che usano Bootstrap Italia</a></li>
+<li class="observablehq-secondary-link"><a href="#mappa-delle-scuole-che-usano-bootstrap-italia">Mappa delle scuole che usano Bootstrap Italia</a></li>
+<li class="observablehq-secondary-link"><a href="#mappa-dei-comuni-che-usano-bootstrap-versione">Mappa dei comuni che usano bootstrap versione </a></li>
+<li class="observablehq-secondary-link"><a href="#mappa-delle-scuole-che-usano-bootstrap-versione">Mappa delle scuole che usano bootstrap versione </a></li>
 </ol>
 </nav>
 </aside>
 <div id="observablehq-center">
 <main id="observablehq-main" class="observablehq">
 <h1 id="analisi-lighthouse-dei-siti-delle-pubbliche-amministrazioni-italiane" tabindex="-1"><a class="observablehq-header-anchor" href="#analisi-lighthouse-dei-siti-delle-pubbliche-amministrazioni-italiane">Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane</a></h1>
-<p>Lighthouse è stato fatto girare su tutti i siti delle Pubbliche Amministrazioni italiane presenti su IndicePA.</p>
+<div class="observablehq observablehq--block"><!--:bf956b09:--></div>
+<p>Lighthouse è stato fatto girare su tutti i siti delle <observablehq-loading></observablehq-loading><!--:46134a8a:--> Pubbliche Amministrazioni italiane presenti su IndicePA.</p>
 <h2 id="in-quanti-enti-%C3%A8-fallito-lighthouse%3F" tabindex="-1"><a class="observablehq-header-anchor" href="#in-quanti-enti-%C3%A8-fallito-lighthouse%3F">In quanti enti è fallito Lighthouse?</a></h2>
 <div class="observablehq observablehq--block"><!--:4660608b:--></div>
 <div class="observablehq observablehq--block"><!--:9318b006:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:4f5d1d59:--></div>
+<p>Alcuni motivi per il fallimento di Lighthouse:</p>
+<ul>
+<li>L'URI è sbagliata</li>
+<li>Il sito non è contattabile</li>
+<li>Il sito ha dei problemi di certificato</li>
+<li>La pagina ha degli errori</li>
+</ul>
+<h3 id="test-con-curl" tabindex="-1"><a class="observablehq-header-anchor" href="#test-con-curl">Test con cURL</a></h3>
+<p>Per analizzare questi motivi, si è utilizzato cURL con un timeout di 10s e al massimo 2 tentativi per ciascun sito.</p>
+<div class="observablehq observablehq--block"><!--:73056b64:--></div>
 <h2 id="quanti-hanno-risposto-in-https%3F" tabindex="-1"><a class="observablehq-header-anchor" href="#quanti-hanno-risposto-in-https%3F">Quanti hanno risposto in HTTPS?</a></h2>
+<p>Alcuni siti dichiarano ancora un'URL con il prefisso <code>http://</code> anziché <code>https://</code>, non permettendo una connessione sicura.</p>
 <div class="observablehq observablehq--block"><!--:cd7c0bcc:--></div>
 <div class="observablehq observablehq--block"><!--:731a970c:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:ee1a2080:--></div>
@@ -388,9 +896,46 @@ marks: [
 <div class="observablehq observablehq--block"><!--:554cdf4b:--></div>
 <div class="observablehq observablehq--block"><!--:7355b427:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:841040b8:--></div>
+<h2 id="tutti-i-punteggi" tabindex="-1"><a class="observablehq-header-anchor" href="#tutti-i-punteggi">Tutti i punteggi</a></h2>
+<div class="observablehq observablehq--block"><!--:a7cfda26:--></div>
+<div class="observablehq observablehq--block"><!--:aa742cb5:--></div>
+<div class="observablehq observablehq--block"><!--:da2bedf5:--></div>
+<div class="observablehq observablehq--block"><!--:7879bbb8:--></div>
+<h2 id="mappa-dei-comuni-che-usano-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-dei-comuni-che-usano-bootstrap">Mappa dei comuni che usano Bootstrap</a></h2>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:b9adacee:--></div>
+<div class="observablehq observablehq--block"><!--:1016175f:--></div>
+<h2 id="mappa-delle-scuole-che-usano-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-delle-scuole-che-usano-bootstrap">Mappa delle scuole che usano Bootstrap</a></h2>
+<div class="observablehq observablehq--block"><!--:6f0f8a6d:--></div>
+<div class="observablehq observablehq--block"><!--:7c984c64:--></div>
+<div class="observablehq observablehq--block"><!--:c54cb794:--></div>
+<div class="observablehq observablehq--block"><!--:f066e5f1:--></div>
+<h2 id="mappa-dei-comuni-che-usano-bootstrap-italia" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-dei-comuni-che-usano-bootstrap-italia">Mappa dei comuni che usano Bootstrap Italia</a></h2>
+<div class="observablehq observablehq--block"><!--:487349d0:--></div>
+<div class="observablehq observablehq--block"><!--:20edf688:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:507c57e8:--></div>
+<div class="observablehq observablehq--block"><!--:1902490f:--></div>
+<h2 id="mappa-delle-scuole-che-usano-bootstrap-italia" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-delle-scuole-che-usano-bootstrap-italia">Mappa delle scuole che usano Bootstrap Italia</a></h2>
+<div class="observablehq observablehq--block"><!--:83797602:--></div>
+<div class="observablehq observablehq--block"><!--:a856689f:--></div>
+<div class="observablehq observablehq--block"><!--:00e4c18c:--></div>
+<div class="observablehq observablehq--block"><!--:9f99050c:--></div>
+<h2 id="mappa-dei-comuni-che-usano-bootstrap-versione" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-dei-comuni-che-usano-bootstrap-versione">Mappa dei comuni che usano bootstrap versione <observablehq-loading></observablehq-loading><!--:5243a229:--></a></h2>
+<div class="observablehq observablehq--block"><!--:9ea2575b:--></div>
+<div class="observablehq observablehq--block"><!--:6973c676:--></div>
+<div class="observablehq observablehq--block"><!--:351d0f5c:--></div>
+<div class="observablehq observablehq--block"><!--:6bb47615:--></div>
+<div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:63352271:--></div>
+<div class="observablehq observablehq--block"><!--:ee342913:--></div>
+<h2 id="mappa-delle-scuole-che-usano-bootstrap-versione" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-delle-scuole-che-usano-bootstrap-versione">Mappa delle scuole che usano bootstrap versione <observablehq-loading></observablehq-loading><!--:44b40b71:--></a></h2>
+<div class="observablehq observablehq--block"><!--:3e78a691:--></div>
+<div class="observablehq observablehq--block"><!--:cfd5b8da:--></div>
+<div class="observablehq observablehq--block"><!--:a9df5d24:--></div>
+<div class="observablehq observablehq--block"><!--:d0df763a:--></div>
+<div class="observablehq observablehq--block"><!--:a12d0bb8:--></div>
+<div class="observablehq observablehq--block"><!--:3f541ac3:--></div>
 </main>
 <footer id="observablehq-footer">
-<nav><a rel="prev" href="./"><span>CarbonEnti</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-08-06T18:21:16">Aug 6, 2024</a>.</div>
+<nav><a rel="prev" href="./"><span>CarbonEnti</span></a><a rel="next" href="./data/venv/lib/python3.12/site-packages/numpy/random/LICENSE"><span>NCSA Open Source License</span></a></nav>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-09-16T18:58:49">Sep 16, 2024</a>.</div>
 </footer>
 </div>
