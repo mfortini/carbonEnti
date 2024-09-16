@@ -1,73 +1,74 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.11.0">
 <title>Analisi Lighthouse dei siti dei comuni italiani | CarbonEnti</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
-<link rel="preload" as="style" href="./_observablehq/theme-cotton.css">
-<link rel="preload" as="style" href="./_observablehq/stdlib/inputs.css">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-cotton.b361865a.css">
+<link rel="preload" as="style" href="./_observablehq/stdlib/inputs.ea9fd553.css">
 <link rel="preload" as="style" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&amp;display=swap" crossorigin>
-<link rel="stylesheet" type="text/css" href="./_observablehq/theme-cotton.css">
-<link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-cotton.b361865a.css">
+<link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.ea9fd553.css">
 <link rel="stylesheet" type="text/css" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
-<link rel="modulepreload" href="./_observablehq/client.js">
-<link rel="modulepreload" href="./_observablehq/runtime.js">
-<link rel="modulepreload" href="./_observablehq/stdlib.js">
-<link rel="modulepreload" href="./_npm/d3@7.9.0/_esm.js">
-<link rel="modulepreload" href="./_observablehq/stdlib/duckdb.js">
-<link rel="modulepreload" href="./_observablehq/stdlib/inputs.js">
-<link rel="modulepreload" href="./_npm/leaflet@1.9.4/_esm.js">
-<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.16/_esm.js">
-<link rel="modulepreload" href="./_npm/@duckdb/duckdb-wasm@1.28.0/_esm.js">
-<link rel="modulepreload" href="./_npm/htl@0.3.1/_esm.js">
-<link rel="modulepreload" href="./_npm/isoformat@0.2.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-array@3.2.4/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-axis@3.0.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-brush@3.0.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-chord@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-color@3.1.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-contour@4.0.2/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-drag@3.0.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-ease@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-force@3.0.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-format@3.1.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-geo@3.1.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-hierarchy@3.1.2/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-interpolate@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-path@3.1.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-polygon@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-quadtree@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-random@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-scale@4.0.2/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-scale-chromatic@3.1.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-selection@3.0.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-shape@3.2.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-time@3.1.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-timer@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-transition@3.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/_esm.js">
-<link rel="modulepreload" href="./_npm/interval-tree-1d@1.0.4/_esm.js">
-<link rel="modulepreload" href="./_npm/apache-arrow@17.0.0/_esm.js">
-<link rel="modulepreload" href="./_npm/internmap@2.0.3/_esm.js">
-<link rel="modulepreload" href="./_npm/delaunator@5.0.1/_esm.js">
-<link rel="modulepreload" href="./_npm/binary-search-bounds@2.0.5/_esm.js">
-<link rel="modulepreload" href="./_npm/tslib@2.7.0/_esm.js">
-<link rel="modulepreload" href="./_npm/flatbuffers@24.3.25/_esm.js">
-<link rel="modulepreload" href="./_npm/robust-predicates@3.0.2/_esm.js">
+<link rel="modulepreload" href="./_observablehq/client.59433b5d.js">
+<link rel="modulepreload" href="./_observablehq/runtime.5f0e99b2.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.ecd269e5.js">
+<link rel="modulepreload" href="./_npm/d3@7.9.0/7055d4c5.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/duckdb.95295d2b.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/inputs.989d304e.js">
+<link rel="modulepreload" href="./_npm/leaflet@1.9.4/d8a0af43.js">
+<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.16/e828d8c8.js">
+<link rel="modulepreload" href="./_npm/@duckdb/duckdb-wasm@1.28.0/6d3961a7.js">
+<link rel="modulepreload" href="./_npm/htl@0.3.1/063eb405.js">
+<link rel="modulepreload" href="./_npm/isoformat@0.2.1/c68fbd73.js">
+<link rel="modulepreload" href="./_npm/d3-array@3.2.4/e95f898e.js">
+<link rel="modulepreload" href="./_npm/d3-axis@3.0.0/d44feff9.js">
+<link rel="modulepreload" href="./_npm/d3-brush@3.0.0/5830b12a.js">
+<link rel="modulepreload" href="./_npm/d3-chord@3.0.1/84d7b8e9.js">
+<link rel="modulepreload" href="./_npm/d3-color@3.1.0/2c0cdfa2.js">
+<link rel="modulepreload" href="./_npm/d3-contour@4.0.2/626bedc4.js">
+<link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/00c41b5d.js">
+<link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/b5f7cdc6.js">
+<link rel="modulepreload" href="./_npm/d3-drag@3.0.0/b22c5864.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/407f7a1f.js">
+<link rel="modulepreload" href="./_npm/d3-ease@3.0.1/6f15f633.js">
+<link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/ef1ec490.js">
+<link rel="modulepreload" href="./_npm/d3-force@3.0.0/5e1ff060.js">
+<link rel="modulepreload" href="./_npm/d3-format@3.1.0/5851d7ef.js">
+<link rel="modulepreload" href="./_npm/d3-geo@3.1.1/dcd02767.js">
+<link rel="modulepreload" href="./_npm/d3-hierarchy@3.1.2/f1db2593.js">
+<link rel="modulepreload" href="./_npm/d3-interpolate@3.0.1/034b7bcb.js">
+<link rel="modulepreload" href="./_npm/d3-path@3.1.0/4bb53638.js">
+<link rel="modulepreload" href="./_npm/d3-polygon@3.0.1/bbafde58.js">
+<link rel="modulepreload" href="./_npm/d3-quadtree@3.0.1/aa5b35a8.js">
+<link rel="modulepreload" href="./_npm/d3-random@3.0.1/32c7fec2.js">
+<link rel="modulepreload" href="./_npm/d3-scale@4.0.2/567840a0.js">
+<link rel="modulepreload" href="./_npm/d3-scale-chromatic@3.1.0/cf9b720b.js">
+<link rel="modulepreload" href="./_npm/d3-selection@3.0.0/5dcd62f4.js">
+<link rel="modulepreload" href="./_npm/d3-shape@3.2.0/f8e03c56.js">
+<link rel="modulepreload" href="./_npm/d3-time@3.1.0/5bc129e1.js">
+<link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/19c92b44.js">
+<link rel="modulepreload" href="./_npm/d3-timer@3.0.1/f31b5398.js">
+<link rel="modulepreload" href="./_npm/d3-transition@3.0.1/8debb4ba.js">
+<link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/4b0cc581.js">
+<link rel="modulepreload" href="./_npm/interval-tree-1d@1.0.4/a62ae5ce.js">
+<link rel="modulepreload" href="./_npm/apache-arrow@17.0.0/169cdc0a.js">
+<link rel="modulepreload" href="./_npm/internmap@2.0.3/5eed35fd.js">
+<link rel="modulepreload" href="./_npm/delaunator@5.0.1/e67acb27.js">
+<link rel="modulepreload" href="./_npm/binary-search-bounds@2.0.5/1ee6c50d.js">
+<link rel="modulepreload" href="./_npm/tslib@2.7.0/f0f7d58c.js">
+<link rel="modulepreload" href="./_npm/flatbuffers@24.3.25/fd24637b.js">
+<link rel="modulepreload" href="./_npm/robust-predicates@3.0.2/8ac9039b.js">
 <script type="module">
 
-import {define} from "./_observablehq/client.js";
-import {registerFile, FileAttachment} from "./_observablehq/stdlib.js";
-import {registerTable} from "./_observablehq/stdlib/duckdb.js";
+import {define} from "./_observablehq/client.59433b5d.js";
+import {registerFile, FileAttachment} from "./_observablehq/stdlib.ecd269e5.js";
+import {registerTable} from "./_observablehq/stdlib/duckdb.95295d2b.js";
 
-registerFile("./data/comuniGeo.json", {"name":"./data/comuniGeo.json","mimeType":"application/json","path":"./_file/data/comuniGeo.ff46b07a.json","lastModified":1726498571965});
-registerFile("./data/entiRes.parquet", {"name":"./data/entiRes.parquet","path":"./_file/data/entiRes.cc10f4d7.parquet","lastModified":1726079322671});
+registerFile("./data/comuniGeo.json", {"name":"./data/comuniGeo.json","mimeType":"application/json","path":"./_file/data/comuniGeo.ff46b07a.json","lastModified":1726507483182,"size":42526644});
+registerFile("./data/entiRes.parquet", {"name":"./data/entiRes.parquet","path":"./_file/data/entiRes.bbf2d500.parquet","lastModified":1726507363802,"size":1771253});
 registerTable("entiRes", FileAttachment("./data/entiRes.parquet"));
 
 define({id: "70002472", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
@@ -456,11 +457,11 @@ console.log(true.toString());
 <nav>
 <div>Contents</div>
 <ol>
-<li class="observablehq-secondary-link"><a href="#in-quanti-enti-%C3%A8-fallito-lighthouse%3F">In quanti enti è fallito Lighthouse?</a></li>
-<li class="observablehq-secondary-link"><a href="#quanti-hanno-risposto-in-https%3F">Quanti hanno risposto in HTTPS?</a></li>
+<li class="observablehq-secondary-link"><a href="#in-quanti-enti-e-fallito-lighthouse">In quanti enti è fallito Lighthouse?</a></li>
+<li class="observablehq-secondary-link"><a href="#quanti-hanno-risposto-in-https">Quanti hanno risposto in HTTPS?</a></li>
 <li class="observablehq-secondary-link"><a href="#distribuzione-dei-punteggi-lighthouse">Distribuzione dei punteggi lighthouse</a></li>
-<li class="observablehq-secondary-link"><a href="#tempo-necessario-per-avere-un-contenuto-%22significativo%22">Tempo necessario per avere un contenuto &quot;significativo&quot;</a></li>
-<li class="observablehq-secondary-link"><a href="#dimensione-della-pagina-(byte)">Dimensione della pagina (byte)</a></li>
+<li class="observablehq-secondary-link"><a href="#tempo-necessario-per-avere-un-contenuto-significativo">Tempo necessario per avere un contenuto &quot;significativo&quot;</a></li>
+<li class="observablehq-secondary-link"><a href="#dimensione-della-pagina-byte">Dimensione della pagina (byte)</a></li>
 <li class="observablehq-secondary-link"><a href="#uso-di-bootstrap">Uso di Bootstrap</a></li>
 <li class="observablehq-secondary-link"><a href="#tutti-i-punteggi">Tutti i punteggi</a></li>
 <li class="observablehq-secondary-link"><a href="#mappa-dei-comuni-che-usano-bootstrap">Mappa dei comuni che usano Bootstrap</a></li>
@@ -472,9 +473,9 @@ console.log(true.toString());
 <main id="observablehq-main" class="observablehq">
 <h1 id="analisi-lighthouse-dei-siti-dei-comuni-italiani" tabindex="-1"><a class="observablehq-header-anchor" href="#analisi-lighthouse-dei-siti-dei-comuni-italiani">Analisi Lighthouse dei siti dei comuni italiani</a></h1>
 <p>Lighthouse è stato fatto girare su tutti i siti dei comuni italiani presenti su IndicePA.</p>
-<h2 id="in-quanti-enti-%C3%A8-fallito-lighthouse%3F" tabindex="-1"><a class="observablehq-header-anchor" href="#in-quanti-enti-%C3%A8-fallito-lighthouse%3F">In quanti enti è fallito Lighthouse?</a></h2>
+<h2 id="in-quanti-enti-e-fallito-lighthouse" tabindex="-1"><a class="observablehq-header-anchor" href="#in-quanti-enti-e-fallito-lighthouse">In quanti enti è fallito Lighthouse?</a></h2>
 <div class="observablehq observablehq--block"><!--:70002472:--></div>
-<h2 id="quanti-hanno-risposto-in-https%3F" tabindex="-1"><a class="observablehq-header-anchor" href="#quanti-hanno-risposto-in-https%3F">Quanti hanno risposto in HTTPS?</a></h2>
+<h2 id="quanti-hanno-risposto-in-https" tabindex="-1"><a class="observablehq-header-anchor" href="#quanti-hanno-risposto-in-https">Quanti hanno risposto in HTTPS?</a></h2>
 <div class="observablehq observablehq--block"><!--:70152a65:--></div>
 <div class="observablehq observablehq--block"><!--:d11c16ec:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:c9343fb1:--></div>
@@ -483,19 +484,19 @@ console.log(true.toString());
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:c316ddd2:--></div>
 <div class="observablehq observablehq--block"><!--:31b6b911:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:797030c2:--></div>
-<h2 id="tempo-necessario-per-avere-un-contenuto-%22significativo%22" tabindex="-1"><a class="observablehq-header-anchor" href="#tempo-necessario-per-avere-un-contenuto-%22significativo%22">Tempo necessario per avere un contenuto "significativo"</a></h2>
+<h2 id="tempo-necessario-per-avere-un-contenuto-significativo" tabindex="-1"><a class="observablehq-header-anchor" href="#tempo-necessario-per-avere-un-contenuto-significativo">Tempo necessario per avere un contenuto "significativo"</a></h2>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:425cb3b2:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:4eba0582:--></div>
 <div class="observablehq observablehq--block"><!--:13a35e83:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:770f6358:--></div>
-<h2 id="dimensione-della-pagina-(byte)" tabindex="-1"><a class="observablehq-header-anchor" href="#dimensione-della-pagina-(byte)">Dimensione della pagina (byte)</a></h2>
+<h2 id="dimensione-della-pagina-byte" tabindex="-1"><a class="observablehq-header-anchor" href="#dimensione-della-pagina-byte">Dimensione della pagina (byte)</a></h2>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:2e4d473d:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:8f0750e4:--></div>
 <div class="observablehq observablehq--block"><!--:898f99ac:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:a9f6f2bc:--></div>
 <h2 id="uso-di-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#uso-di-bootstrap">Uso di Bootstrap</a></h2>
 <div class="observablehq observablehq--block"><!--:d9dd6aa7:--></div>
-<h3 id="uso-di-bootstrap-italia-(fra-chi-usa-bootstrap)" tabindex="-1"><a class="observablehq-header-anchor" href="#uso-di-bootstrap-italia-(fra-chi-usa-bootstrap)">Uso di Bootstrap Italia (fra chi usa Bootstrap)</a></h3>
+<h3 id="uso-di-bootstrap-italia-fra-chi-usa-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#uso-di-bootstrap-italia-fra-chi-usa-bootstrap">Uso di Bootstrap Italia (fra chi usa Bootstrap)</a></h3>
 <div class="observablehq observablehq--block"><!--:5054e042:--></div>
 <div class="observablehq observablehq--block"><!--:27e1d43d:--></div>
 <div class="grid grid-cols-2">
@@ -526,6 +527,6 @@ console.log(true.toString());
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="next" href="./analisi_2024_07"><span>Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane (2024-07)</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-09-16T19:11:41">Sep 16, 2024</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-09-16T19:25:19">Sep 16, 2024</a>.</div>
 </footer>
 </div>
