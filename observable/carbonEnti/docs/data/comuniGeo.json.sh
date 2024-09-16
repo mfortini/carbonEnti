@@ -2,7 +2,7 @@
 
 filename=/tmp/comuniGeo.json
 
-ogr2ogr -s_srs "./docs/data/Limiti01012023_g/Com01012023_g/Com01012023_g_WGS84.prj" -t_srs epsg:4326 ${filename}  -f "GeoJSON" "./docs/data/Limiti01012024_g/Com01012024_g/Com01012024_g_WGS84.shp"
+ogr2ogr -s_srs "./docs/data/Limiti01012024_g/Com01012024_g/Com01012024_g_WGS84.prj" -t_srs epsg:4326 ${filename}  -f "GeoJSON" "./docs/data/Limiti01012024_g/Com01012024_g/Com01012024_g_WGS84.shp"
 
 
 cat ${filename}
