@@ -1,6 +1,6 @@
 import threading
 import signal
-from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError
+from concurrent.futures import ThreadPoolExecutor, as_completed, wait, FIRST_COMPLETED, TimeoutError
 from datetime import datetime, timedelta
 import subprocess
 import json
@@ -10,17 +10,18 @@ from logger_setup import setup_logger
 import os
 import argparse
 import sys
-import time  # used for graceful delays if needed
+import time
 
 # Configuration
 MONGO_URI = "mongodb://localhost:27017"
 DB_NAME = "website_crawler"
 CRAWL_INTERVAL = timedelta(days=30)
-MAX_WORKERS = 4
-MAX_TEST_THREADS = 3
+MAX_WORKERS = 4                # Website-level executor max workers
 MAX_CPU_USAGE = 80
 MAX_RAM_USAGE = 80
-TEST_TIMEOUT = 120  # Timeout for each test in seconds
+TEST_TIMEOUT = 120             # Timeout for each test in seconds
+MAX_CONCURRENT_TESTS = 10      # Maximum number of test tasks running concurrently
+MAX_QUEUE_SIZE = 1000          # Maximum number of website tasks allowed in the queue
 
 # Directory containing test scripts
 TESTS_DIR = "tests"
@@ -172,10 +173,13 @@ def run_test_script(url, test_name, name):
             stdout, stderr = process.communicate(timeout=TEST_TIMEOUT)
         except subprocess.TimeoutExpired:
             logger.error(f"Test {test_name} timed out for {url} ({name}). Killing process group.")
-            # Kill the entire process group.
-            os.killpg(process.pid, signal.SIGTERM)
-            stdout, stderr = process.communicate(timeout=10)
-            process.wait()
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+                stdout, stderr = process.communicate(timeout=10)
+            except subprocess.TimeoutExpired:
+                logger.error(f"Test {test_name} did not terminate after SIGTERM for {url} ({name}). Forcing kill with SIGKILL.")
+                os.killpg(process.pid, signal.SIGKILL)
+                stdout, stderr = process.communicate(timeout=5)
             return {
                 "test_name": test_name,
                 "url": url,
@@ -196,7 +200,6 @@ def run_test_script(url, test_name, name):
                     "error": "Invalid JSON output",
                     "execution_timestamp": execution_timestamp,
                 }
-            # Ensure required keys are present.
             test_result["execution_timestamp"] = execution_timestamp
             test_result.setdefault("test_name", test_name)
             test_result.setdefault("status", "success")
@@ -223,15 +226,11 @@ def run_test_script(url, test_name, name):
         # Cleanup: Ensure any stray processes in the test's process group are terminated.
         if process is not None:
             try:
-                # With start_new_session=True, the process group ID is the same as the process PID.
                 pgid = process.pid
-                # Iterate over all processes to find those in the same process group.
                 for proc in psutil.process_iter(['pid', 'name']):
                     try:
-                        # Skip the main test process.
                         if proc.pid == process.pid:
                             continue
-                        # If the process is in the same process group, kill it.
                         if os.getpgid(proc.pid) == pgid:
                             logger.info(f"Killing stray process {proc.pid} ({proc.name()}) from test {test_name}.")
                             proc.kill()
@@ -240,18 +239,19 @@ def run_test_script(url, test_name, name):
             except Exception as cleanup_error:
                 logger.debug(f"Error during process group cleanup for test {test_name}: {cleanup_error}")
 
+def spawn_crawl_script(website, crawl_id, test_executor):
+    """
+    For a given website, schedule its tests as independent tasks in the global test executor.
+    Returns immediately after scheduling.
+    """
+    # If shutdown has been requested, do not schedule new tests.
+    if shutdown_event.is_set():
+        logger.info("Shutdown event detected. Skipping scheduling of new tests.")
+        return
 
-def spawn_crawl_script(website, crawl_id):
-    """
-    Spawns test scripts in parallel for a single website after validating and normalizing the URL.
-    Only tests that have not yet been executed for this crawl (based on crawl_id) are run.
-    """
+    # We'll use a consistent document per website & crawl.
     run_timestamp = datetime.now()
-    tests = []
-    #test_names = ["test_dns", "test_http", "test_ssl", "test_bootstrapitalia", "test_react_bootstrapitalia"]
-    test_names = ["test_dns", "test_http", "test_ssl", "test_bootstrapitalia"]
-    #test_names = ["test_dns"]
-    #test_names = ["test_dns", "test_http"]
+    test_names = ["test_dns", "test_http", "test_ssl", "test_bootstrapitalia", "test_react_bootstrapitalia"]
 
     url = website.get("url")
     name = website.get("name") or website.get("_id", "Unknown")
@@ -267,50 +267,55 @@ def spawn_crawl_script(website, crawl_id):
 
     logger.info(f"Starting crawl for website: {normalized_url} ({url})")
 
-    # Only run tests that have not been executed yet for this crawl_id.
-    with ThreadPoolExecutor(max_workers=MAX_TEST_THREADS) as executor:
-        future_to_test = {
-            executor.submit(run_test_script, normalized_url, test_name, name): test_name
-            for test_name in test_names
-            if not check_existing_test(website["_id"], test_name, crawl_id)
-        }
+    # Schedule each test as an independent task in the test_executor.
+    for test_name in test_names:
+        if check_existing_test(website["_id"], test_name, crawl_id):
+            continue
+        future = test_executor.submit(run_test_script, normalized_url, test_name, name)
+        # Attach metadata to the future for later use.
+        future.website_id = website["_id"]
+        future.test_name = test_name
+        future.run_timestamp = run_timestamp
+        future.add_done_callback(lambda fut, cid=crawl_id: handle_test_result(fut, cid))
 
-        for future in as_completed(future_to_test):
-            test_name = future_to_test[future]
-            try:
-                result = future.result()
-                if result is not None:
-                    # Enforce that both test_name and status are set
-                    result.setdefault("test_name", test_name)
-                    result.setdefault("status", "success")
-                    tests.append(result)
-                    logger.info(f"Test {test_name} completed for website {url}.")
-            except Exception as e:
-                logger.exception(f"Error running test {test_name} for {normalized_url} ({url}): {e}")
-
-    if tests:
-        store_crawl_result(website["_id"], run_timestamp, crawl_id, tests)
-
-def store_crawl_result(website_id, run_timestamp, crawl_id, new_tests):
+def handle_test_result(future, crawl_id):
     """
-    Stores or appends crawl results to the database for a specific run.
+    Callback to handle an individual test result and store it.
+    """
+    try:
+        result = future.result()
+    except Exception as e:
+        logger.exception("Error in test callback: %s", e)
+        result = {
+            "test_name": getattr(future, "test_name", "unknown"),
+            "status": "fail",
+            "error": str(e),
+            "execution_timestamp": datetime.now()
+        }
+    website_id = getattr(future, "website_id", None)
+    if website_id is not None:
+        store_crawl_result(website_id, crawl_id, [result])
+
+def store_crawl_result(website_id, crawl_id, new_tests):
+    """
+    Stores or appends crawl results to the database for a specific website and crawl.
+    A single document per (website_id, crawl_id) is maintained.
     """
     if shutdown_event.is_set():
         logger.info("Shutdown event detected. Skipping result storage.")
         return
 
-    logger.info(f"Storing results for website_id={website_id}, run_timestamp={run_timestamp}, crawl_id={crawl_id}")
-    existing_run = results_collection.find_one(
-        {"website_id": website_id, "run_timestamp": run_timestamp, "crawl_id": crawl_id}
-    )
+    logger.info(f"Storing results for website_id={website_id}, crawl_id={crawl_id}")
+    existing_run = results_collection.find_one({
+        "website_id": website_id,
+        "crawl_id": crawl_id
+    })
 
     if existing_run:
-        existing_tests = existing_run["tests"]
+        existing_tests = existing_run.get("tests", [])
         for new_test in new_tests:
-            # Only add tests that are not already stored (based on test_name)
-            if not any(test["test_name"] == new_test["test_name"] for test in existing_tests):
+            if not any(test.get("test_name") == new_test.get("test_name") for test in existing_tests):
                 existing_tests.append(new_test)
-
         results_collection.update_one(
             {"_id": existing_run["_id"]},
             {"$set": {"tests": existing_tests}}
@@ -319,7 +324,6 @@ def store_crawl_result(website_id, run_timestamp, crawl_id, new_tests):
     else:
         results_collection.insert_one({
             "website_id": website_id,
-            "run_timestamp": run_timestamp,
             "crawl_id": crawl_id,
             "tests": new_tests
         })
@@ -334,50 +338,61 @@ def ensure_indexes():
     results_collection.create_index([("crawl_id", pymongo.ASCENDING)])
     logger.info("Indexes created successfully.")
 
+# Bounded submission for website tasks using a semaphore to limit queued tasks.
+website_semaphore = threading.Semaphore(MAX_QUEUE_SIZE)
+def bounded_submit(executor, fn, *args, **kwargs):
+    website_semaphore.acquire()
+    future = executor.submit(fn, *args, **kwargs)
+    # Release semaphore when the task is done.
+    future.add_done_callback(lambda f: website_semaphore.release())
+    return future
+
 def main():
     """
-    Main function to orchestrate the crawling process with incremental reading.
+    Main function to orchestrate the crawling process.
+    This design uses one executor for website-level tasks and a separate global executor for tests,
+    with the test executor limiting the number of tests running concurrently.
+    Bounded submission prevents queuing an excessive number of website tasks.
     """
     parser = argparse.ArgumentParser(description="Website Crawler")
     parser.add_argument("--crawl_id", required=True, help="Unique identifier for this crawl")
     args = parser.parse_args()
-
     crawl_id = args.crawl_id
+
     logger.info(f"Starting crawler with crawl_id={crawl_id}...")
 
-    try:
-        # Resume any incomplete tests from this crawl
-        incomplete_tests = fetch_incomplete_tests(crawl_id)
-        if incomplete_tests:
-            logger.info("Resuming incomplete tests from previous crawl...")
-            for test in incomplete_tests:
-                if shutdown_event.is_set():
-                    logger.info("Shutdown event detected. Exiting resume loop.")
-                    break
-                spawn_crawl_script(test, crawl_id)
+    # Global executor for test tasks limited to MAX_CONCURRENT_TESTS.
+    test_executor = ThreadPoolExecutor(max_workers=MAX_CONCURRENT_TESTS)
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as website_executor:
+        try:
+            # Resume any incomplete tests from a previous crawl.
+            incomplete_tests = fetch_incomplete_tests(crawl_id)
+            if incomplete_tests:
+                logger.info("Resuming incomplete tests from previous crawl...")
+                for test in incomplete_tests:
+                    if shutdown_event.is_set():
+                        logger.info("Shutdown event detected. Exiting resume loop.")
+                        break
+                    bounded_submit(website_executor, spawn_crawl_script, test, crawl_id, test_executor)
 
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            # Process websites in batches.
             for batch in fetch_websites_to_crawl(batch_size=100):
                 if shutdown_event.is_set():
                     logger.info("Shutdown event detected. Breaking out of website batch loop.")
                     break
-                futures = [executor.submit(spawn_crawl_script, website, crawl_id) for website in batch]
-
-                for future in as_completed(futures):
+                for website in batch:
                     if shutdown_event.is_set():
-                        logger.info("Shutdown event detected. Waiting for active tasks to finish.")
+                        logger.info("Shutdown event detected. Skipping scheduling new website tasks.")
                         break
-                    try:
-                        future.result()
-                    except Exception as e:
-                        logger.exception("Error in crawling process: %s", e)
-    except KeyboardInterrupt:
-        logger.warning("KeyboardInterrupt detected. Exiting gracefully.")
-    finally:
-        # Ensure MongoDB client is closed to avoid resource leaks.
-        client.close()
-        logger.info("MongoDB connection closed.")
-        logger.info("Crawler shutdown complete.")
+                    bounded_submit(website_executor, spawn_crawl_script, website, crawl_id, test_executor)
+        except KeyboardInterrupt:
+            logger.warning("KeyboardInterrupt detected. Exiting gracefully.")
+        finally:
+            website_executor.shutdown(wait=True)
+            test_executor.shutdown(wait=True)
+            client.close()
+            logger.info("MongoDB connection closed.")
+            logger.info("Crawler shutdown complete.")
 
 if __name__ == "__main__":
     ensure_indexes()
