@@ -20,8 +20,8 @@ MAX_WORKERS = 4                # Website-level executor max workers
 MAX_CPU_USAGE = 80
 MAX_RAM_USAGE = 80
 TEST_TIMEOUT = 120             # Timeout for each test in seconds
-MAX_CONCURRENT_TESTS = 10      # Maximum number of test tasks running concurrently
-MAX_QUEUE_SIZE = 1000          # Maximum number of website tasks allowed in the queue
+MAX_CONCURRENT_TESTS = 5      # Maximum number of test tasks running concurrently
+MAX_QUEUE_SIZE = 50          # Maximum number of website tasks allowed in the queue
 
 # Directory containing test scripts
 TESTS_DIR = "tests"
@@ -252,6 +252,8 @@ def spawn_crawl_script(website, crawl_id, test_executor):
     # We'll use a consistent document per website & crawl.
     run_timestamp = datetime.now()
     test_names = ["test_dns", "test_http", "test_ssl", "test_bootstrapitalia", "test_react_bootstrapitalia"]
+    test_names = ["test_dns", "test_http", "test_ssl", "test_bootstrapitalia", "test_lighthouse",  "test_react_bootstrapitalia"]
+
 
     url = website.get("url")
     name = website.get("name") or website.get("_id", "Unknown")
