@@ -14,8 +14,8 @@ def extract_data(crawl_id, output_file="output.csv"):
     crawl_docs = crawl_results_col.find({"crawl_id": crawl_id})
     rows = []
     
-    # These test names will be handled in a fixed way (or skipped in the dynamic part)
-    fixed_test_names = {"test_lighthouse", "test_firstMeaningfulPaint", "test_totalByteWeight", "test_bootstrapitalia"}
+    # These test names will be handled in a fixed way and skipped in dynamic processing
+    fixed_test_names = {"test_lighthouse", "test_bootstrapitalia"}
 
     for doc in crawl_docs:
         # Retrieve the corresponding website document using website_id.
@@ -29,21 +29,19 @@ def extract_data(crawl_id, output_file="output.csv"):
         # Fixed field: Codice_IPA from the website document.
         row["Codice_IPA"] = website.get("Codice_IPA", "")
 
-        # Determine the URL: first try the website document's url;
-        # if not valid (e.g. "NaN"), fall back to the test_bootstrapitalia url.
-        website_url = website.get("url", "")
-        if isinstance(website_url, dict):
-            website_url = website_url.get("$numberDouble", "")
-        if website_url == "NaN" or not website_url:
-            test_bootstrap = next((t for t in doc.get("tests", []) if t.get("test_name") == "test_bootstrapitalia"), {})
-            row["url"] = test_bootstrap.get("url", "")
-        else:
-            row["url"] = website_url
+        test_ssl = next((t for t in doc.get("tests", []) if t.get("test_name") == "test_ssl"), {})
+        row["url"] = test_ssl.get("url", "")
 
-        # Fixed columns left empty as specified.
-        row["lighthouseScore"] = ""
-        row["firstMeaningfulPaint"] = ""
-        row["totalByteWeight"] = ""
+
+        # Extract lighthouse metrics from test_lighthouse if present
+        test_lighthouse = next((t for t in doc.get("tests", []) if t.get("test_name") == "test_lighthouse"), {})
+        row["lighthouseScore"] = test_lighthouse.get("lighthouseScore", "")
+        row["firstMeaningfulPaint"] = test_lighthouse.get("largestContentfulPaint", "")
+        row["totalByteWeight"] = test_lighthouse.get("totalByteWeight", "")
+        row["accessibilityScore"] = test_lighthouse.get("accessibilityScore", "")
+
+
+        # Fixed columns for bootstrap (if any) left as empty.
         row["bootstrap"] = ""
         row["bootstrapItalia"] = ""
 
@@ -74,7 +72,7 @@ def extract_data(crawl_id, output_file="output.csv"):
 
     # Fixed header columns in the required order.
     fixed_columns = [
-        "Codice_IPA", "url", "lighthouseScore", "firstMeaningfulPaint",
+        "Codice_IPA", "url", "lighthouseScore", "firstMeaningfulPaint", "accessibilityScore",
         "totalByteWeight", "bootstrap", "bootstrapItalia", "bootstrap2_js", "bootstrap2_css"
     ]
 
