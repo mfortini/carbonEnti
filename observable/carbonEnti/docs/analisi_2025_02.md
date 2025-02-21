@@ -1,5 +1,5 @@
 ---
-title: Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane (2024-07)
+title: Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane (2025-02-20)
 theme: cotton
 sql:
     entiRes: ./data/entiRes.parquet
