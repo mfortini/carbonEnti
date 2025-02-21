@@ -1,82 +1,84 @@
 <!DOCTYPE html>
+<html>
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="generator" content="Observable Framework v1.11.0">
+<meta name="generator" content="Observable Framework v1.13.2">
 <title>Analisi Lighthouse dei siti dei comuni italiani | CarbonEnti</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
-<link rel="preload" as="style" href="./_observablehq/theme-cotton.b361865a.css">
+<link rel="preload" as="style" href="./_observablehq/theme-cotton.50526c5b.css">
 <link rel="preload" as="style" href="./_observablehq/stdlib/inputs.ea9fd553.css">
 <link rel="preload" as="style" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
-<link rel="stylesheet" type="text/css" href="./_observablehq/theme-cotton.b361865a.css">
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-cotton.50526c5b.css">
 <link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.ea9fd553.css">
 <link rel="stylesheet" type="text/css" href="./_npm/leaflet@1.9.4/dist/leaflet.css">
-<link rel="modulepreload" href="./_observablehq/client.59433b5d.js">
-<link rel="modulepreload" href="./_observablehq/runtime.5f0e99b2.js">
-<link rel="modulepreload" href="./_observablehq/stdlib.ecd269e5.js">
-<link rel="modulepreload" href="./_npm/d3@7.9.0/7055d4c5.js">
-<link rel="modulepreload" href="./_observablehq/stdlib/duckdb.95295d2b.js">
-<link rel="modulepreload" href="./_observablehq/stdlib/inputs.989d304e.js">
-<link rel="modulepreload" href="./_npm/leaflet@1.9.4/d8a0af43.js">
-<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.16/e828d8c8.js">
-<link rel="modulepreload" href="./_npm/@duckdb/duckdb-wasm@1.28.0/6d3961a7.js">
+<link rel="modulepreload" href="./_observablehq/client.f36b71f9.js">
+<link rel="modulepreload" href="./_observablehq/runtime.e080113b.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.b9626c53.js">
+<link rel="modulepreload" href="./_npm/d3@7.9.0/159192fa.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/duckdb.db6e65de.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/inputs.483a445f.js">
+<link rel="modulepreload" href="./_npm/leaflet@1.9.4/82e0844d.js">
+<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.16/b7d4b5b4.js">
+<link rel="modulepreload" href="./_npm/@duckdb/duckdb-wasm@1.29.0/f3ef3e90.js">
 <link rel="modulepreload" href="./_npm/htl@0.3.1/063eb405.js">
 <link rel="modulepreload" href="./_npm/isoformat@0.2.1/c68fbd73.js">
-<link rel="modulepreload" href="./_npm/d3-array@3.2.4/e95f898e.js">
-<link rel="modulepreload" href="./_npm/d3-axis@3.0.0/d44feff9.js">
-<link rel="modulepreload" href="./_npm/d3-brush@3.0.0/5830b12a.js">
+<link rel="modulepreload" href="./_npm/d3-array@3.2.4/37839b6a.js">
+<link rel="modulepreload" href="./_npm/d3-axis@3.0.0/bd0afa17.js">
+<link rel="modulepreload" href="./_npm/d3-brush@3.0.0/6495590f.js">
 <link rel="modulepreload" href="./_npm/d3-chord@3.0.1/84d7b8e9.js">
 <link rel="modulepreload" href="./_npm/d3-color@3.1.0/2c0cdfa2.js">
-<link rel="modulepreload" href="./_npm/d3-contour@4.0.2/626bedc4.js">
+<link rel="modulepreload" href="./_npm/d3-contour@4.0.2/d496a3b3.js">
 <link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/00c41b5d.js">
 <link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/b5f7cdc6.js">
-<link rel="modulepreload" href="./_npm/d3-drag@3.0.0/b22c5864.js">
+<link rel="modulepreload" href="./_npm/d3-drag@3.0.0/ef06b1ff.js">
 <link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/407f7a1f.js">
 <link rel="modulepreload" href="./_npm/d3-ease@3.0.1/6f15f633.js">
-<link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/ef1ec490.js">
-<link rel="modulepreload" href="./_npm/d3-force@3.0.0/5e1ff060.js">
-<link rel="modulepreload" href="./_npm/d3-format@3.1.0/5851d7ef.js">
-<link rel="modulepreload" href="./_npm/d3-geo@3.1.1/dcd02767.js">
+<link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/35880c2a.js">
+<link rel="modulepreload" href="./_npm/d3-force@3.0.0/60bb70b3.js">
+<link rel="modulepreload" href="./_npm/d3-format@3.1.0/33fb7288.js">
+<link rel="modulepreload" href="./_npm/d3-geo@3.1.1/5e427f4b.js">
 <link rel="modulepreload" href="./_npm/d3-hierarchy@3.1.2/f1db2593.js">
 <link rel="modulepreload" href="./_npm/d3-interpolate@3.0.1/034b7bcb.js">
 <link rel="modulepreload" href="./_npm/d3-path@3.1.0/4bb53638.js">
 <link rel="modulepreload" href="./_npm/d3-polygon@3.0.1/bbafde58.js">
 <link rel="modulepreload" href="./_npm/d3-quadtree@3.0.1/aa5b35a8.js">
 <link rel="modulepreload" href="./_npm/d3-random@3.0.1/32c7fec2.js">
-<link rel="modulepreload" href="./_npm/d3-scale@4.0.2/567840a0.js">
-<link rel="modulepreload" href="./_npm/d3-scale-chromatic@3.1.0/cf9b720b.js">
-<link rel="modulepreload" href="./_npm/d3-selection@3.0.0/5dcd62f4.js">
-<link rel="modulepreload" href="./_npm/d3-shape@3.2.0/f8e03c56.js">
-<link rel="modulepreload" href="./_npm/d3-time@3.1.0/5bc129e1.js">
-<link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/19c92b44.js">
+<link rel="modulepreload" href="./_npm/d3-scale@4.0.2/2bb2815a.js">
+<link rel="modulepreload" href="./_npm/d3-scale-chromatic@3.1.0/b6952b03.js">
+<link rel="modulepreload" href="./_npm/d3-selection@3.0.0/a4e530fb.js">
+<link rel="modulepreload" href="./_npm/d3-shape@3.2.0/be692bd9.js">
+<link rel="modulepreload" href="./_npm/d3-time@3.1.0/3a9ac1c1.js">
+<link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/28d1ef76.js">
 <link rel="modulepreload" href="./_npm/d3-timer@3.0.1/f31b5398.js">
-<link rel="modulepreload" href="./_npm/d3-transition@3.0.1/8debb4ba.js">
-<link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/4b0cc581.js">
+<link rel="modulepreload" href="./_npm/d3-transition@3.0.1/0c259fbf.js">
+<link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/da4a6ccc.js">
 <link rel="modulepreload" href="./_npm/interval-tree-1d@1.0.4/a62ae5ce.js">
-<link rel="modulepreload" href="./_npm/apache-arrow@17.0.0/169cdc0a.js">
+<link rel="modulepreload" href="./_npm/apache-arrow@19.0.0/b1115395.js">
 <link rel="modulepreload" href="./_npm/internmap@2.0.3/5eed35fd.js">
 <link rel="modulepreload" href="./_npm/delaunator@5.0.1/e67acb27.js">
 <link rel="modulepreload" href="./_npm/binary-search-bounds@2.0.5/1ee6c50d.js">
-<link rel="modulepreload" href="./_npm/tslib@2.7.0/f0f7d58c.js">
-<link rel="modulepreload" href="./_npm/flatbuffers@24.3.25/fd24637b.js">
+<link rel="modulepreload" href="./_npm/tslib@2.8.1/0f00bc60.js">
+<link rel="modulepreload" href="./_npm/flatbuffers@24.12.23/49c17c45.js">
 <link rel="modulepreload" href="./_npm/robust-predicates@3.0.2/8ac9039b.js">
 <script type="module">
 
-import {define} from "./_observablehq/client.59433b5d.js";
-import {registerFile, FileAttachment} from "./_observablehq/stdlib.ecd269e5.js";
-import {registerTable} from "./_observablehq/stdlib/duckdb.95295d2b.js";
+import {define} from "./_observablehq/client.f36b71f9.js";
+import {registerFile, FileAttachment} from "./_observablehq/stdlib.b9626c53.js";
+import {registerTable} from "./_observablehq/stdlib/duckdb.db6e65de.js";
 
-registerFile("./data/comuniGeo.json", {"name":"./data/comuniGeo.json","mimeType":"application/json","path":"./_file/data/comuniGeo.ff46b07a.json","lastModified":1726507483182,"size":42526644});
-registerFile("./data/entiRes.parquet", {"name":"./data/entiRes.parquet","path":"./_file/data/entiRes.bbf2d500.parquet","lastModified":1726507363802,"size":1771253});
+registerFile("./data/comuniGeo.json", {"name":"./data/comuniGeo.json","mimeType":"application/json","path":"./_file/data/comuniGeo.e5e0fd3c.json","lastModified":1739526332598,"size":42526666});
+registerFile("./data/entiRes.parquet", {"name":"./data/entiRes.parquet","path":"./_file/data/entiRes.324b7451.parquet","lastModified":1740150975120,"size":2586892});
 registerTable("entiRes", FileAttachment("./data/entiRes.parquet"));
 
-define({id: "70002472", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
-display(Inputs.table(await sql`SELECT CAST (crawlDate AS STRING) as crawlDate, COUNT(Codice_IPA) FROM entiRes where lighthouseScore = 0 OR lighthouseScore IS NULL GROUP BY crawlDate ORDER BY crawlDate`));
+define({id: "f1560e97", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
+display(Inputs.table(await sql`SELECT CAST (crawlDate AS STRING) as crawlDate, COUNT(Codice_IPA) FROM entiRes where lighthouseScore = 0 OR lighthouseScore IS NULL GROUP BY crawlDate ORDER BY crawlDate`, {select: false}));
 }});
 
-define({id: "70152a65", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
-display(Inputs.table(await sql`PIVOT entiRes  ON starts_with(url, 'https://') USING COUNT(Codice_IPA) GROUP BY crawlDate`));
+define({id: "347894fa", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
+display(Inputs.table(await sql`PIVOT entiRes  ON starts_with(url, 'https://') USING COUNT(Codice_IPA) GROUP BY crawlDate`, {select: false}));
 }});
 
 define({id: "d11c16ec", inputs: ["sql"], outputs: ["https"], body: async (sql) => {
@@ -249,12 +251,12 @@ Plot.plot({
 ))
 }});
 
-define({id: "d9dd6aa7", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
-display(Inputs.table(await sql`PIVOT (SELECT * FROM entiRes WHERE bootstrap != 'Error') ON bootstrap USING COUNT(Codice_IPA) GROUP BY crawlDate`));
+define({id: "f0281000", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
+display(Inputs.table(await sql`PIVOT (SELECT * FROM entiRes WHERE bootstrap != 'Error') ON bootstrap USING COUNT(Codice_IPA) GROUP BY crawlDate`, {select: false}));
 }});
 
-define({id: "5054e042", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
-display(Inputs.table(await sql`PIVOT (SELECT * FROM entiRes WHERE bootstrap = 'true') ON bootstrapItalia USING COUNT(Codice_IPA) GROUP BY crawlDate`));
+define({id: "e725c2db", inputs: ["display","Inputs","sql"], body: async (display,Inputs,sql) => {
+display(Inputs.table(await sql`PIVOT (SELECT * FROM entiRes WHERE bootstrap = 'true') ON bootstrapItalia USING COUNT(Codice_IPA) GROUP BY crawlDate`, {select: false}));
 }});
 
 define({id: "27e1d43d", inputs: ["view","Inputs","lightHouseScore"], outputs: ["filterDateBootstrap"], body: (view,Inputs,lightHouseScore) => {
@@ -331,8 +333,8 @@ const filterDateTable = view(Inputs.select(lightHouseScore.toArray().map(x=>x["c
 return {filterDateTable};
 }});
 
-define({id: "4b02e905", inputs: ["display","Inputs","sql","filterDateTable"], body: async (display,Inputs,sql,filterDateTable) => {
-display(Inputs.table(await sql`SELECT * FROM entiRes WHERE crawlDate = ${filterDateTable} ORDER BY lightHouseScore DESC`));
+define({id: "4d270fa2", inputs: ["display","Inputs","sql","filterDateTable"], body: async (display,Inputs,sql,filterDateTable) => {
+display(Inputs.table(await sql`SELECT * FROM entiRes WHERE crawlDate = ${filterDateTable} ORDER BY lightHouseScore DESC`, {select: false}));
 }});
 
 define({id: "aa742cb5", inputs: ["FileAttachment"], outputs: ["comuniGeo"], body: (FileAttachment) => {
@@ -441,6 +443,8 @@ console.log(true.toString());
 }});
 
 </script>
+</head>
+<body>
 <input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
 <label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
 <nav id="observablehq-sidebar">
@@ -450,9 +454,11 @@ console.log(true.toString());
   </ol>
   <ol>
     <li class="observablehq-link"><a href="./analisi_2024_07">Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane (2024-07)</a></li>
+    <li class="observablehq-link"><a href="./analisi_2025_02">Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane (2024-07)</a></li>
   </ol>
 </nav>
-<script>{Object.assign(document.createElement("a"),{href:""}).password&&location.replace(location.href);const e=document.querySelector("#observablehq-sidebar"),t=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?t.checked=r==="true":t.indeterminate=!0;for(const o of document.querySelectorAll("#observablehq-sidebar summary")){const s=o.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${o.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
 <aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
 <nav>
 <div>Contents</div>
@@ -469,14 +475,13 @@ console.log(true.toString());
 </ol>
 </nav>
 </aside>
-<div id="observablehq-center">
 <main id="observablehq-main" class="observablehq">
 <h1 id="analisi-lighthouse-dei-siti-dei-comuni-italiani" tabindex="-1"><a class="observablehq-header-anchor" href="#analisi-lighthouse-dei-siti-dei-comuni-italiani">Analisi Lighthouse dei siti dei comuni italiani</a></h1>
 <p>Lighthouse è stato fatto girare su tutti i siti dei comuni italiani presenti su IndicePA.</p>
 <h2 id="in-quanti-enti-e-fallito-lighthouse" tabindex="-1"><a class="observablehq-header-anchor" href="#in-quanti-enti-e-fallito-lighthouse">In quanti enti è fallito Lighthouse?</a></h2>
-<div class="observablehq observablehq--block"><!--:70002472:--></div>
+<div class="observablehq observablehq--block"><!--:f1560e97:--></div>
 <h2 id="quanti-hanno-risposto-in-https" tabindex="-1"><a class="observablehq-header-anchor" href="#quanti-hanno-risposto-in-https">Quanti hanno risposto in HTTPS?</a></h2>
-<div class="observablehq observablehq--block"><!--:70152a65:--></div>
+<div class="observablehq observablehq--block"><!--:347894fa:--></div>
 <div class="observablehq observablehq--block"><!--:d11c16ec:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:c9343fb1:--></div>
 <h2 id="distribuzione-dei-punteggi-lighthouse" tabindex="-1"><a class="observablehq-header-anchor" href="#distribuzione-dei-punteggi-lighthouse">Distribuzione dei punteggi lighthouse</a></h2>
@@ -495,9 +500,9 @@ console.log(true.toString());
 <div class="observablehq observablehq--block"><!--:898f99ac:--></div>
 <div class="observablehq observablehq--block"><observablehq-loading></observablehq-loading><!--:a9f6f2bc:--></div>
 <h2 id="uso-di-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#uso-di-bootstrap">Uso di Bootstrap</a></h2>
-<div class="observablehq observablehq--block"><!--:d9dd6aa7:--></div>
+<div class="observablehq observablehq--block"><!--:f0281000:--></div>
 <h3 id="uso-di-bootstrap-italia-fra-chi-usa-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#uso-di-bootstrap-italia-fra-chi-usa-bootstrap">Uso di Bootstrap Italia (fra chi usa Bootstrap)</a></h3>
-<div class="observablehq observablehq--block"><!--:5054e042:--></div>
+<div class="observablehq observablehq--block"><!--:e725c2db:--></div>
 <div class="observablehq observablehq--block"><!--:27e1d43d:--></div>
 <div class="grid grid-cols-2">
 <div class="card">
@@ -513,7 +518,7 @@ console.log(true.toString());
 </div>
 <h2 id="tutti-i-punteggi" tabindex="-1"><a class="observablehq-header-anchor" href="#tutti-i-punteggi">Tutti i punteggi</a></h2>
 <div class="observablehq observablehq--block"><!--:e0a426d5:--></div>
-<div class="observablehq observablehq--block"><!--:4b02e905:--></div>
+<div class="observablehq observablehq--block"><!--:4d270fa2:--></div>
 <div class="observablehq observablehq--block"><!--:aa742cb5:--></div>
 <div class="observablehq observablehq--block"><!--:2c703974:--></div>
 <h2 id="mappa-dei-comuni-che-usano-bootstrap" tabindex="-1"><a class="observablehq-header-anchor" href="#mappa-dei-comuni-che-usano-bootstrap">Mappa dei comuni che usano Bootstrap</a></h2>
@@ -527,6 +532,8 @@ console.log(true.toString());
 </main>
 <footer id="observablehq-footer">
 <nav><a rel="next" href="./analisi_2024_07"><span>Analisi Lighthouse dei siti delle Pubbliche Amministrazioni italiane (2024-07)</span></a></nav>
-<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2024-09-16T19:25:19">Sep 16, 2024</a>.</div>
+<div>Built with <a href="https://observablehq.com/" target="_blank" rel="noopener noreferrer">Observable</a> on <a title="2025-02-21T15:26:07">Feb 21, 2025</a>.</div>
 </footer>
 </div>
+</body>
+</html>
