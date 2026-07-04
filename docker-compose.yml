@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  python_with_node:
+    image: debian:latest
+    volumes:
+      - .:/app
+    working_dir: /app
+    cap_add:
+      - SYS_ADMIN
+    command: |
+      /bin/bash rundocker.sh
+
+      #    command: >
+      #      /bin/bash -c "apt-get update &&
+      #      apt-get install -y python3 python3-venv nodejs npm &&
+      #      python3 -m venv venv &&
+      #      source venv/bin/activate &&
+      #      pip install --upgrade pip &&
+      #      pip install -r requirements.txt &&
+      #      npm install &&
+      #      python3 your_script.py"
+      #

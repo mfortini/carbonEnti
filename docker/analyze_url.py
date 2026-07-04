@@ -1,0 +1,102 @@
+import subprocess
+import json
+import re
+import requests
+import logging
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+from xvfbwrapper import Xvfb
+
+logging.basicConfig(level=logging.INFO)
+
+BI_patterns={
+        "bootstrapItalia": r"bootstrap.{0,16}italia",
+        "boostrap": r"bootstrap"
+}
+
+# Function to fetch and search content
+def fetch_and_search(url, patterns):
+    logging.debug("fetch_and_search {}".format(url))
+    ret={}
+
+    try:
+        response = requests.get(url)
+        content = response.text
+        for pat_name,pattern in patterns.items():
+            if re.search(pattern, content, re.IGNORECASE):
+                ret[pat_name]=True
+                logging.debug(f"Pattern '{pattern}' found in {url}")
+    except requests.RequestException as e:
+        logging.debug(f"Failed to fetch {url}: {e}")
+
+    return ret
+
+def checkBootstrap2(url):
+    logging.info("checkBootstrap2 {}".format(url))
+    ret={}
+    with Xvfb() as xvfb:
+        webdrv = webdriver.Firefox()
+        try:
+            webdrv.get(url)
+            ret["url"] = url
+            ret["bootstrapItaliaVariable"]=webdrv.execute_script('return window.BOOTSTRAP_ITALIA_VERSION;')
+            ret["bootstrapItaliaMethod"]=webdrv.execute_script('return getComputedStyle(document.body).getPropertyValue("--bootstrap-italia-version");')
+
+            js_files = webdrv.find_elements(By.XPATH, "//script[@src]")
+            css_files = webdrv.find_elements(By.XPATH, "//link[@rel='stylesheet'][@href]")
+
+            # Extract the URLs
+            js_urls = [js.get_attribute('src') for js in js_files]
+            css_urls = [css.get_attribute('href') for css in css_files]
+
+            logging.debug("js_urls {}".format(js_urls))
+            logging.debug("css_urls {}".format(css_urls))
+
+            # Search patterns in JS files
+            for js_url in js_urls:
+                ret.update(fetch_and_search(js_url, BI_patterns))
+
+            # Search patterns in CSS files
+            for css_url in css_urls:
+                ret.update(fetch_and_search(css_url, BI_patterns))
+
+            for pat_name in BI_patterns.keys():
+                if pat_name not in ret:
+                    ret[pat_name] = False
+
+        except Exception as e:
+            logging.debug(e)
+            ret["url"] = url
+            ret["bootstrapItaliaVariable"]=None
+            ret["bootstrapItaliaMethod"]=None
+            ret["bootstrapItalia"]=None
+            ret["bootstrap"]=None
+        webdrv.quit()
+
+
+    return ret
+
+def analyze_url(url):
+    result={}
+    bootstrapRes2 = checkBootstrap2(url)
+    result["bootstrapItalia"] = bootstrapRes2
+
+    return result
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Analyze a single URL.")
+    parser.add_argument("url", type=str, help="URL to analyze")
+    parser.add_argument("-o", "--output", type=str, help="Output file", default=None)
+    args = parser.parse_args()
+
+    result = analyze_url(args.url)
+    if args.output:
+        with open(args.output, "w") as f:
+            json.dump(result, f, indent=2)
+    else:
+        print(json.dumps(result, indent=2))
+
+

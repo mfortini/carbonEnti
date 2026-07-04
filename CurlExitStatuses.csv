@@ -1,0 +1,12 @@
+CurlExitStatus,Description
+0, Success
+1, Unsupported protocol
+2, Failed to initialize
+3, URL malformed
+6, Could not resolve host
+7, Failed to connect to host
+28, Timeout
+35, SSL connect error
+52, No reply
+56, Failure in network
+60, Peer certificate error
